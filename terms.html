@@ -4,33 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Terms of Service — Huetube Teams</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root { --primary: #4f46e5; --text: #111827; --text-muted: #6b7280; --border: #e5e7eb; --bg: #f9fafb; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
-    .navbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-    .nav-logo { font-weight: 800; color: var(--primary); font-size: 1.1rem; text-decoration: none; }
-    .container { max-width: 760px; margin: 48px auto; padding: 0 24px 80px; background: #fff; border-radius: 12px; border: 1px solid var(--border); padding: 48px; }
-    h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
-    .updated { font-size: .85rem; color: var(--text-muted); margin-bottom: 32px; }
-    h2 { font-size: 1.1rem; font-weight: 700; margin: 28px 0 10px; color: var(--primary); }
-    p { margin-bottom: 12px; font-size: .9375rem; color: #374151; }
-    ul { padding-left: 20px; margin-bottom: 12px; }
-    li { margin-bottom: 6px; font-size: .9375rem; color: #374151; }
-    .footer { text-align: center; padding: 32px; font-size: .8rem; color: var(--text-muted); }
-    .footer a { color: var(--primary); text-decoration: none; margin: 0 6px; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <nav class="navbar">
-  <a class="nav-logo" href="index.html">📋 Huetube Teams</a>
-  <a href="index.html" style="font-size:.875rem;color:var(--text-muted);text-decoration:none;">← Back to Home</a>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon"><i class="fa-solid fa-people-group"></i></div>
+    Huetube Teams
+  </a>
+  <a href="index.html" class="nav-back">
+    <i class="fa-solid fa-arrow-left"></i> Back to Home
+  </a>
 </nav>
 
-<div class="container">
+<div class="page-hero">
   <h1>Terms of Service</h1>
   <p class="updated">Last updated: January 1, 2025</p>
+</div>
+
+<div class="container">
 
   <h2>1. Acceptance of Terms</h2>
   <p>By accessing or using Huetube Teams ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.</p>
@@ -77,12 +72,14 @@
 
   <h2>13. Contact</h2>
   <p>For questions about these Terms, please contact us at <strong>legal@huetubeteams.com</strong>.</p>
+
 </div>
 
-<div class="footer">
+<div class="footer-light">
   © 2025 Huetube Teams. All rights reserved. ·
   <a href="terms.html">Terms</a> ·
   <a href="privacy.html">Privacy</a>
 </div>
+
 </body>
 </html>
