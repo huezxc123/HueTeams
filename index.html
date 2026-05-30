@@ -3,76 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Huetube Teams - Smart Payroll & HR</title>
-  <!-- Firebase Compat -->
+  <title>Huetube Teams — Smart Payroll & HR for Philippine Businesses</title>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root { --primary: #4f46e5; --primary-dark: #4338ca; --bg: #f9fafb; --card: #ffffff; --text: #111827; --text-muted: #6b7280; --border: #e5e7eb; --radius: 12px; --shadow: 0 1px 3px rgba(0,0,0,.08); --shadow-lg: 0 10px 25px rgba(0,0,0,.08); }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    .navbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
-    .nav-logo { font-weight: 800; font-size: 1.25rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-    .nav-links { display: flex; gap: 24px; align-items: center; }
-    .nav-links a { text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: .875rem; transition: color .2s; }
-    .nav-links a:hover { color: var(--primary); }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; font-size: .875rem; cursor: pointer; transition: all .2s; text-decoration: none; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-    .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
-    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-    .btn-lg { padding: 14px 28px; font-size: 1rem; }
-    .hero { max-width: 1100px; margin: 0 auto; padding: 80px 24px 60px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .hero h1 { font-size: 3rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; background: linear-gradient(135deg, var(--primary-dark), #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { font-size: 1.125rem; color: var(--text-muted); max-width: 640px; margin-bottom: 32px; }
-    .hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    .features { max-width: 1100px; margin: 0 auto; padding: 60px 24px; text-align: center; }
-    .section-title { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
-    .section-sub { font-size: 1.05rem; color: var(--text-muted); margin-bottom: 48px; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-    .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; text-align: left; box-shadow: var(--shadow); transition: transform .2s; }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-    .feature-icon { font-size: 1.8rem; margin-bottom: 12px; color: var(--primary); }
-    .feature-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
-    .feature-card p { font-size: .9rem; color: var(--text-muted); }
-    .pricing { max-width: 1100px; margin: 0 auto; padding: 60px 24px; text-align: center; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 32px; }
-    .pricing-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px 28px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; position: relative; }
-    .pricing-card.popular { border-color: var(--primary); box-shadow: var(--shadow-lg); transform: scale(1.03); }
-    .popular-badge { position: absolute; top: -12px; background: var(--primary); color: #fff; padding: 4px 16px; border-radius: 20px; font-size: .75rem; font-weight: 700; }
-    .plan-name { font-weight: 600; font-size: 1.1rem; margin-bottom: 8px; }
-    .plan-price { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
-    .plan-period { font-size: .85rem; color: var(--text-muted); margin-bottom: 20px; }
-    .plan-features { list-style: none; margin-bottom: 24px; text-align: left; width: 100%; }
-    .plan-features li { padding: 6px 0; font-size: .9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-    .plan-features li i { color: var(--primary); }
-    .cta { background: linear-gradient(135deg, var(--primary-dark), #6366f1); color: #fff; text-align: center; padding: 60px 24px; margin-top: 40px; }
-    .cta h2 { font-size: 2rem; margin-bottom: 12px; }
-    .cta p { font-size: 1.05rem; opacity: .9; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto; }
-    .footer { background: #1f2937; color: #d1d5db; padding: 40px 24px; text-align: center; font-size: .875rem; }
-    .footer a { color: #9ca3af; text-decoration: none; margin: 0 8px; }
-    .footer a:hover { color: #fff; }
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity .2s; }
-    .modal-overlay.active { opacity: 1; pointer-events: all; }
-    .modal { background: #fff; border-radius: var(--radius); padding: 32px; max-width: 400px; width: 90%; box-shadow: var(--shadow-lg); position: relative; }
-    .modal h3 { margin-bottom: 20px; font-size: 1.3rem; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
-    .form-group label { font-size: .8rem; font-weight: 600; color: var(--text-muted); }
-    .form-input { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; transition: border .2s; }
-    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
-    .close-modal { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
-    .alert { padding: 10px 14px; border-radius: 8px; font-size: .85rem; margin-bottom: 12px; }
-    .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-    .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-    .alert-info { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
-    .hidden { display: none !important; }
-    .verify-banner { position: fixed; top: 0; left: 0; right: 0; background: #4f46e5; color: #fff; text-align: center; padding: 14px 24px; z-index: 9999; font-size: .9rem; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,.2); display: none; }
-    .verify-banner.show { display: block; }
-    @media (max-width: 768px) { .hero h1 { font-size: 2rem; } .pricing-grid { grid-template-columns: 1fr; } .pricing-card.popular { transform: none; } }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -82,66 +19,152 @@
 <!-- ========== LANDING PAGE ========== -->
 <div id="landingPage">
   <nav class="navbar">
-    <div class="nav-logo"><i class="fa-solid fa-people-group"></i> Huetube Teams</div>
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-icon"><i class="fa-solid fa-people-group"></i></div>
+      Huetube Teams
+    </a>
     <div class="nav-links">
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <button class="btn btn-outline" onclick="openModal('login')">Log In</button>
-      <button class="btn btn-primary" onclick="openModal('signup')">Get Started</button>
+      <button class="btn btn-primary" onclick="openModal('signup')"><i class="fa-solid fa-rocket"></i> Get Started</button>
     </div>
   </nav>
 
-  <section class="hero">
-    <h1>Smart Payroll & HR for Modern Teams</h1>
-    <p>Automate attendance, leave management, payslips, and payroll reports. Built for Philippine businesses.</p>
-    <div class="hero-buttons">
-      <button class="btn btn-primary btn-lg" onclick="openModal('signup')">Start Free Trial</button>
-    </div>
-  </section>
-
-  <section class="features" id="features">
-    <h2 class="section-title">Everything you need</h2>
-    <p class="section-sub">Designed for simplicity, built for compliance.</p>
-    <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-clock"></i></div><h3>Time & Attendance</h3><p>Real-time clock-in/out, IP tracking, late detection.</p></div>
-      <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div><h3>Leave Management</h3><p>Multi-level approval, balance tracking.</p></div>
-      <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div><h3>Automated Payslips</h3><p>Night diff, holiday pay, statutory benefits.</p></div>
-      <div class="feature-card"><div class="feature-icon"><i class="fa-solid fa-file-excel"></i></div><h3>Excel Export</h3><p>Payroll, attendance, DTR in one click.</p></div>
-    </div>
-  </section>
-
-  <section class="pricing" id="pricing">
-    <h2 class="section-title">Simple Pricing</h2>
-    <p class="section-sub">No hidden fees. Cancel anytime.</p>
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="plan-name">Starter</div><div class="plan-price">₱1,500</div><div class="plan-period">per month</div>
-        <ul class="plan-features"><li><i class="fa-solid fa-check"></i> Up to 20 employees</li><li><i class="fa-solid fa-check"></i> Attendance & scheduling</li><li><i class="fa-solid fa-check"></i> Leave management</li><li><i class="fa-solid fa-check"></i> Basic payroll export</li></ul>
-        <button class="btn btn-outline btn-lg" onclick="openModal('signup')">Choose Starter</button>
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="hero">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Built for Philippine Businesses
       </div>
-      <div class="pricing-card popular">
-        <div class="popular-badge">Most Popular</div>
-        <div class="plan-name">Pro</div><div class="plan-price">₱3,500</div><div class="plan-period">per month</div>
-        <ul class="plan-features"><li><i class="fa-solid fa-check"></i> Up to 50 employees</li><li><i class="fa-solid fa-check"></i> Advanced payroll</li><li><i class="fa-solid fa-check"></i> Multi-level approval</li><li><i class="fa-solid fa-check"></i> Audit logs</li></ul>
-        <button class="btn btn-primary btn-lg" onclick="openModal('signup')">Choose Pro</button>
+      <h1>Smart Payroll & HR<br>for <em>Modern</em> Teams</h1>
+      <p>Automate attendance, leave management, payslips, and payroll reports — fully compliant with Philippine labor law.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary btn-lg" onclick="openModal('signup')">
+          <i class="fa-solid fa-rocket"></i> Start Free Trial
+        </button>
+        <button class="btn btn-outline btn-lg" onclick="openModal('login')">
+          <i class="fa-solid fa-right-to-bracket"></i> Log In
+        </button>
       </div>
-      <div class="pricing-card">
-        <div class="plan-name">Enterprise</div><div class="plan-price">Custom</div><div class="plan-period">contact us</div>
-        <ul class="plan-features"><li><i class="fa-solid fa-check"></i> Unlimited employees</li><li><i class="fa-solid fa-check"></i> White-label</li><li><i class="fa-solid fa-check"></i> API access</li><li><i class="fa-solid fa-check"></i> Dedicated support</li></ul>
-        <button class="btn btn-outline btn-lg">Contact Sales</button>
+      <div class="hero-trust">
+        <div class="hero-trust-avatars">
+          <span>A</span><span>B</span><span>C</span><span>D</span>
+        </div>
+        <span>Trusted by growing teams across the Philippines</span>
       </div>
     </div>
   </section>
 
-  <section class="cta">
+  <!-- FEATURES -->
+  <section class="features-bg" id="features">
+    <div class="section-wrap">
+      <div class="section-header">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything you need</h2>
+        <p class="section-sub">Designed for simplicity, built for compliance.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-clock"></i></div>
+          <h3>Time &amp; Attendance</h3>
+          <p>Real-time clock-in/out with IP tracking and automatic late detection — effortless timekeeping.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <h3>Leave Management</h3>
+          <p>Multi-level approval workflows, leave balance tracking, and real-time status updates for your team.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
+          <h3>Automated Payslips</h3>
+          <p>Night differential, holiday pay, SSS/PhilHealth/Pag-IBIG and all statutory benefits computed automatically.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-file-excel"></i></div>
+          <h3>Excel Export</h3>
+          <p>Download payroll registers, attendance sheets, and DTRs in one click — ready for BIR and DOLE.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="section-wrap">
+      <div class="section-header">
+        <div class="section-label">Pricing</div>
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-sub">No hidden fees. No long-term contracts. Cancel anytime.</p>
+      </div>
+      <div class="pricing-grid">
+        <!-- Starter -->
+        <div class="pricing-card">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">₱1,500<span>/mo</span></div>
+          <div class="plan-period">up to 20 employees</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><i class="fa-solid fa-check"></i> Up to 20 employees</li>
+            <li><i class="fa-solid fa-check"></i> Attendance &amp; scheduling</li>
+            <li><i class="fa-solid fa-check"></i> Leave management</li>
+            <li><i class="fa-solid fa-check"></i> Basic payroll export</li>
+          </ul>
+          <button class="btn btn-outline btn-lg" onclick="openModal('signup')">Choose Starter</button>
+        </div>
+
+        <!-- Pro (popular) -->
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">₱3,500<span>/mo</span></div>
+          <div class="plan-period">up to 50 employees</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><i class="fa-solid fa-check"></i> Up to 50 employees</li>
+            <li><i class="fa-solid fa-check"></i> Advanced payroll computation</li>
+            <li><i class="fa-solid fa-check"></i> Multi-level approval flows</li>
+            <li><i class="fa-solid fa-check"></i> Audit logs &amp; IP tracking</li>
+          </ul>
+          <button class="btn btn-primary btn-lg" onclick="openModal('signup')">Choose Pro</button>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card">
+          <div class="plan-name">Enterprise</div>
+          <div class="plan-price" style="font-size:2.2rem;">Custom</div>
+          <div class="plan-period">contact us for pricing</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><i class="fa-solid fa-check"></i> Unlimited employees</li>
+            <li><i class="fa-solid fa-check"></i> White-label branding</li>
+            <li><i class="fa-solid fa-check"></i> API access</li>
+            <li><i class="fa-solid fa-check"></i> Dedicated support</li>
+          </ul>
+          <button class="btn btn-outline btn-lg">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
     <h2>Ready to simplify your payroll?</h2>
-    <p>Start your free 14-day trial today.</p>
-    <button class="btn btn-primary btn-lg" style="background:#fff; color:var(--primary);" onclick="openModal('signup')">Create Free Account</button>
+    <p>Start your free 14-day trial today. No credit card required.</p>
+    <button class="btn btn-primary btn-lg" onclick="openModal('signup')">
+      <i class="fa-solid fa-rocket"></i> Create Free Account
+    </button>
   </section>
 
+  <!-- FOOTER -->
   <footer class="footer">
     <div>© 2025 Huetube Teams. All rights reserved.</div>
-    <div><a href="terms.html" target="_blank">Terms of Service</a> · <a href="privacy.html" target="_blank">Privacy Policy</a> · <a href="#">Contact</a></div>
+    <div>
+      <a href="terms.html" target="_blank">Terms of Service</a> ·
+      <a href="privacy.html" target="_blank">Privacy Policy</a> ·
+      <a href="#">Contact</a>
+    </div>
   </footer>
 </div>
 
@@ -152,23 +175,30 @@
     <h3 id="modalTitle">Create Account</h3>
     <div id="modalError" class="alert alert-error hidden"></div>
     <form id="authForm" onsubmit="handleAuth(event)">
-      <div class="form-group" id="nameField"><label>Company Name</label><input type="text" class="form-input" id="companyNameInput" placeholder="Your company" required></div>
-      <div class="form-group"><label>Email</label><input type="email" class="form-input" id="emailInput" placeholder="admin@company.com" required></div>
-      <div class="form-group"><label>Password</label><input type="password" class="form-input" id="passwordInput" placeholder="••••••••" required minlength="6"></div>
-      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;">Create Account</button>
+      <div class="form-group" id="nameField">
+        <label>Company Name</label>
+        <input type="text" class="form-input" id="companyNameInput" placeholder="Your company name" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-input" id="emailInput" placeholder="admin@company.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-input" id="passwordInput" placeholder="••••••••" required minlength="6">
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;margin-top:4px;">Create Account</button>
     </form>
-    <p style="margin-top:16px; font-size:.85rem; text-align:center;">
+    <p style="margin-top:16px;font-size:.85rem;text-align:center;">
       <span id="switchText">Already have an account? <a href="#" id="switchLink" onclick="switchModal(event)">Log In</a></span>
     </p>
-    <!-- Forgot Password link (only visible in login mode) -->
-    <div style="text-align:center; margin-top:8px; display:none;" id="forgotPwWrap">
-      <a href="#" onclick="sendPasswordReset(); return false;" style="font-size:.75rem; color:var(--text-muted); text-decoration: underline;">Forgot Password?</a>
+    <div style="text-align:center;margin-top:8px;display:none;" id="forgotPwWrap">
+      <a href="#" onclick="sendPasswordReset(); return false;" style="font-size:.75rem;color:var(--text-muted);text-decoration:underline;">Forgot Password?</a>
     </div>
   </div>
 </div>
 
 <script>
-  // ===== FIREBASE CONFIG – PALITAN MO ITO =====
   const firebaseConfig = {
     apiKey: "AIzaSyAohgBioG5ZDyhu3t5PO1OGbZEupGNzIc8",
     authDomain: "payrol-saas.firebaseapp.com",
@@ -182,8 +212,8 @@
   const db = firebase.database();
   const auth = firebase.auth();
 
-  let modalMode = 'signup'; // 'login' or 'signup'
-  let pendingVerification = false; // true if user just signed up and needs to verify email
+  let modalMode = 'signup';
+  let pendingVerification = false;
 
   function openModal(mode) {
     modalMode = mode;
@@ -197,14 +227,13 @@
   }
 
   function updateModalUI() {
-    const title = document.getElementById('modalTitle');
-    const nameField = document.getElementById('nameField');
-    const switchLink = document.getElementById('switchLink');
+    const title      = document.getElementById('modalTitle');
+    const nameField  = document.getElementById('nameField');
     const switchText = document.getElementById('switchText');
     const forgotWrap = document.getElementById('forgotPwWrap');
-    const form = document.getElementById('authForm');
+    const form       = document.getElementById('authForm');
+    const submitBtn  = document.getElementById('submitBtn');
     form.reset();
-    const submitBtn = document.getElementById('submitBtn');
 
     if (modalMode === 'login') {
       title.innerText = 'Log In';
@@ -212,7 +241,6 @@
       switchText.innerHTML = `Don't have an account? <a href="#" id="switchLink" onclick="switchModal(event)">Sign Up</a>`;
       if (submitBtn) submitBtn.textContent = 'Log In';
       document.getElementById('companyNameInput').removeAttribute('required');
-      // Show forgot password
       forgotWrap.style.display = 'block';
     } else {
       title.innerText = 'Create Account';
@@ -220,7 +248,6 @@
       switchText.innerHTML = `Already have an account? <a href="#" id="switchLink" onclick="switchModal(event)">Log In</a>`;
       if (submitBtn) submitBtn.textContent = 'Create Account';
       document.getElementById('companyNameInput').setAttribute('required', '');
-      // Hide forgot password during signup
       forgotWrap.style.display = 'none';
     }
   }
@@ -231,81 +258,59 @@
     updateModalUI();
   }
 
-  // ===== HANDLE SIGNUP / LOGIN =====
   async function handleAuth(e) {
     e.preventDefault();
-    const email = document.getElementById('emailInput').value.trim();
+    const email    = document.getElementById('emailInput').value.trim();
     const password = document.getElementById('passwordInput').value;
-    const errorEl = document.getElementById('modalError');
+    const errorEl  = document.getElementById('modalError');
     errorEl.classList.add('hidden');
-    errorEl.className = 'alert alert-error hidden'; // reset style
+    errorEl.className = 'alert alert-error hidden';
 
     try {
       if (modalMode === 'signup') {
         const companyName = document.getElementById('companyNameInput').value.trim();
         if (!companyName) { showError('Please enter a company name'); return; }
 
-        // 1. Create auth user
         isSigningUp = true;
         const userCred = await auth.createUserWithEmailAndPassword(email, password);
         const uid = userCred.user.uid;
 
-        // 2. Generate company key
         const companyRef = db.ref('companies').push();
-        const companyId = companyRef.key;
+        const companyId  = companyRef.key;
 
-        // 3. Force-refresh auth token so DB rules accept the write immediately
-        //    (new accounts sometimes fail DB writes without this)
         try { await userCred.user.getIdToken(true); } catch(e) { console.warn('Token refresh:', e.message); }
 
-        // 4. Write /users/{uid} — retry once if it fails (race with token propagation)
         try {
-          await db.ref(`users/${uid}`).set({ companyId: companyId });
+          await db.ref(`users/${uid}`).set({ companyId });
         } catch(e) {
           console.warn('First /users write failed, retrying in 1s:', e.message);
           await new Promise(r => setTimeout(r, 1000));
-          await db.ref(`users/${uid}`).set({ companyId: companyId });
+          await db.ref(`users/${uid}`).set({ companyId });
         }
 
-        // 5. Write company data
         await companyRef.set({
-          settings: {
-            companyName: companyName,
-            createdAt: firebase.database.ServerValue.TIMESTAMP
-          },
+          settings: { companyName, createdAt: firebase.database.ServerValue.TIMESTAMP },
           users: {
-            [uid]: {
-              fullName: 'Admin',
-              email: email,
-              role: 'Admin',
-              dept: 'RC',
-              empID: uid,
-              companyId: companyId
-            }
+            [uid]: { fullName: 'Admin', email, role: 'Admin', dept: 'RC', empID: uid, companyId }
           }
         });
 
-        // 6. Send verification email (do NOT sign out)
         await userCred.user.sendEmailVerification();
         pendingVerification = true;
-        isSigningUp = false; // allow observer to handle redirection when verified
+        isSigningUp = false;
         closeModal();
         showVerifyBanner(email);
 
       } else {
-        // LOGIN
         isSigningUp = true;
         const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Logging in...'; }
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Logging in…'; }
         const loginCred = await auth.signInWithEmailAndPassword(email, password);
-        // Block unverified users
+
         if (!loginCred.user.emailVerified) {
           await auth.signOut();
           isSigningUp = false;
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Log In'; }
-          showError('Please verify your email before logging in. Check your inbox or request a new verification email.');
-          // Give a way to resend? They could sign up again? Better: Show a resend button in the error.
-          // We'll add a resend link inside the error.
           errorEl.innerHTML = `Please verify your email before logging in. <a href="#" onclick="resendVerificationFromLogin('${email}')">Resend verification</a>`;
           errorEl.classList.remove('hidden');
           return;
@@ -316,17 +321,11 @@
       isSigningUp = false;
       const submitBtn = document.getElementById('submitBtn');
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = modalMode === 'login' ? 'Log In' : 'Create Account'; }
-      if (error.code === 'auth/email-already-in-use') {
-        showError('This email is already registered. Try logging in instead.');
-      } else if (error.code === 'auth/invalid-email') {
-        showError('Please enter a valid email address.');
-      } else if (error.code === 'auth/weak-password') {
-        showError('Password should be at least 6 characters.');
-      } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        showError('Invalid email or password.');
-      } else {
-        showError(error.message);
-      }
+      if (error.code === 'auth/email-already-in-use') showError('This email is already registered. Try logging in instead.');
+      else if (error.code === 'auth/invalid-email') showError('Please enter a valid email address.');
+      else if (error.code === 'auth/weak-password') showError('Password should be at least 6 characters.');
+      else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') showError('Invalid email or password.');
+      else showError(error.message);
     }
   }
 
@@ -337,42 +336,27 @@
     errorEl.classList.remove('hidden');
   }
 
-  // ===== VERIFICATION BANNER (keeps user logged in) =====
   function showVerifyBanner(email) {
     const banner = document.getElementById('verifyBanner');
     banner.innerHTML = `
-      ✅ Account created! We sent a verification email to <b>${email}</b>. 
-      Please click the link in the email to access your dashboard.
+      ✅ Account created! We sent a verification email to <b>${email}</b>.
+      Please click the link to access your dashboard.
       <button onclick="resendVerification()" style="margin-left:12px;background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Resend</button>
       <button onclick="this.parentElement.style.display='none'" style="margin-left:8px;background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">✕</button>
     `;
     banner.classList.add('show');
-    // Auto-hide once user verifies (listener below handles redirect)
   }
 
   async function resendVerification() {
     const user = auth.currentUser;
-    if (!user) {
-      // Fallback: user is null because they signed out? This shouldn't happen with the new flow.
-      // Show a message to login and try.
-      const banner = document.getElementById('verifyBanner');
-      banner.innerHTML = `You've been signed out. Please log in to receive a new verification email.`;
-      return;
-    }
+    if (!user) { document.getElementById('verifyBanner').innerHTML = `You've been signed out. Please log in to receive a new verification email.`; return; }
     try {
       await user.sendEmailVerification();
-      const banner = document.getElementById('verifyBanner');
-      banner.innerHTML = `✅ Verification email resent to <b>${user.email}</b>. Check your inbox.`;
-    } catch (err) {
-      showError(err.message);
-    }
+      document.getElementById('verifyBanner').innerHTML = `✅ Verification email resent to <b>${user.email}</b>. Check your inbox.`;
+    } catch (err) { showError(err.message); }
   }
 
-  // Called from login error link when user tries to login unverified
   async function resendVerificationFromLogin(email) {
-    // We need to sign in first to get the user object and resend.
-    // But we can't sign in because they are unverified? Actually Firebase allows sign-in,
-    // we just check emailVerified afterward. So we can quickly sign in, send, then sign out.
     const password = prompt('Enter your password to receive a new verification email:');
     if (!password) return;
     try {
@@ -380,18 +364,12 @@
       await cred.user.sendEmailVerification();
       await auth.signOut();
       showError('Verification email sent. Please check your inbox.');
-    } catch (err) {
-      showError(err.message);
-    }
+    } catch (err) { showError(err.message); }
   }
 
-  // ===== PASSWORD RESET =====
   async function sendPasswordReset() {
     const email = document.getElementById('emailInput').value.trim();
-    if (!email) {
-      showError('Please enter your email address above, then click Forgot Password.');
-      return;
-    }
+    if (!email) { showError('Please enter your email address above, then click Forgot Password.'); return; }
     try {
       await auth.sendPasswordResetEmail(email);
       const errorEl = document.getElementById('modalError');
@@ -407,20 +385,13 @@
 
   let isSigningUp = false;
 
-  // ===== AUTO-REDIRECT WHEN VERIFIED =====
   auth.onAuthStateChanged(user => {
     if (user) {
-      // If the user is logged in and email is verified, redirect to app.html
-      if (user.emailVerified && !isSigningUp) {
-        window.location.href = 'app.html';
-      }
-      // If unverified, keep showing banner (already handled)
+      if (user.emailVerified && !isSigningUp) window.location.href = 'app.html';
     } else {
-      // No user signed in; if we were in a pending verification state, sign out was intentional
       pendingVerification = false;
     }
   });
-
 </script>
 </body>
 </html>
