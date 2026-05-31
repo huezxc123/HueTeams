@@ -3,72 +3,200 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cuckoo — Dashboard</title>
+  <title>Cuckoo — Smart Payroll & HR for Philippine Businesses</title>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="appLoadingOverlay">
-  <div class="sidebar-logo-icon" style="width:44px;height:44px;border-radius:12px;font-size:1.2rem;"><i class="fa-solid fa-crow"></i></div>
-  <div class="big-spinner"></div>
-  <p style="font-size:.875rem;color:#6e7591;font-weight:600;letter-spacing:-0.01em;">Loading Cuckoo…</p>
-</div>
-<div id="payslipPrintArea" style="display:none;"></div>
-<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-<div class="app-shell">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-icon"><i class="fa-solid fa-crow"></i></div>
+
+<!-- ========== VERIFICATION BANNER ========== -->
+<div class="verify-banner" id="verifyBanner"></div>
+
+<!-- ========== LANDING PAGE ========== -->
+<div id="landingPage">
+  <nav class="navbar">
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-icon"><i class="fa-solid fa-crow"></i></div>
       Cuckoo
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <button class="btn btn-outline" onclick="openModal('login')">Log In</button>
+      <button class="btn btn-primary" onclick="openModal('signup')"><i class="fa-solid fa-rocket"></i> Get Started</button>
     </div>
-    <nav class="sidebar-nav">
-      <div class="sidebar-section-label">Main</div>
-      <div class="sidebar-item active" data-page="dashboard"><i class="fa-solid fa-house"></i> Dashboard</div>
-      <div class="sidebar-item" data-page="employees"><i class="fa-solid fa-users"></i> Employees</div>
-      <div class="sidebar-section-label">Time & Pay</div>
-      <div class="sidebar-item" data-page="attendance"><i class="fa-solid fa-clock"></i> Attendance</div>
-      <div class="sidebar-item" data-page="leaves"><i class="fa-solid fa-calendar"></i> Leaves</div>
-      <div class="sidebar-item" data-page="schedule"><i class="fa-solid fa-calendar-days"></i> Schedule</div>
-      <div class="sidebar-item" data-page="payroll"><i class="fa-solid fa-file-invoice"></i> Payroll</div>
-      <div class="sidebar-section-label">Reports</div>
-      <div class="sidebar-item" data-page="timestamps"><i class="fa-solid fa-table"></i> Timestamp Sheet</div>
-      <div class="sidebar-item" data-page="holidays"><i class="fa-solid fa-calendar-check"></i> Holidays</div>
-      <div class="sidebar-item" data-page="audit"><i class="fa-solid fa-magnifying-glass"></i> Audit Logs</div>
-      <div class="sidebar-section-label">System</div>
-      <div class="sidebar-item" data-page="settings"><i class="fa-solid fa-gear"></i> Settings</div>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      <div style="margin-top:10px;font-size:10px;text-align:center;">
-        <a href="terms.html" target="_blank" style="color:#6c47ff;text-decoration:none;opacity:.7;">Terms</a> ·
-        <a href="privacy.html" target="_blank" style="color:#6c47ff;text-decoration:none;opacity:.7;">Privacy</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="hero">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Built for Philippine Businesses
+      </div>
+      <h1>Smart Payroll & HR<br>for <em>Modern</em> Teams</h1>
+      <p>Automate attendance, leave management, payslips, and payroll reports — fully compliant with Philippine labor law.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary btn-lg" onclick="openModal('signup')">
+          <i class="fa-solid fa-rocket"></i> Start Free Trial
+        </button>
+        <button class="btn btn-outline btn-lg" onclick="openModal('login')">
+          <i class="fa-solid fa-right-to-bracket"></i> Log In
+        </button>
+      </div>
+      <div class="hero-trust">
+        <div class="hero-trust-avatars">
+          <span>A</span><span>B</span><span>C</span><span>D</span>
+        </div>
+        <span>Trusted by growing teams across the Philippines</span>
       </div>
     </div>
-  </aside>
-  <main class="main-content">
-    <div class="top-bar">
-      <h1 id="pageTitle">Dashboard</h1>
-      <div class="user-menu"><i class="fa-solid fa-circle-user"></i> <span id="userDisplayName">Loading...</span></div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-bg" id="features">
+    <div class="section-wrap">
+      <div class="section-header">
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything you need</h2>
+        <p class="section-sub">Designed for simplicity, built for compliance.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-clock"></i></div>
+          <h3>Time &amp; Attendance</h3>
+          <p>Real-time clock-in/out with IP tracking and automatic late detection — effortless timekeeping.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <h3>Leave Management</h3>
+          <p>Multi-level approval workflows, leave balance tracking, and real-time status updates for your team.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-file-invoice"></i></div>
+          <h3>Automated Payslips</h3>
+          <p>Night differential, holiday pay, SSS/PhilHealth/Pag-IBIG and all statutory benefits computed automatically.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fa-solid fa-file-excel"></i></div>
+          <h3>Excel Export</h3>
+          <p>Download payroll registers, attendance sheets, and DTRs in one click — ready for BIR and DOLE.</p>
+        </div>
+      </div>
     </div>
-    <div class="page-content active" id="page-dashboard"></div>
-    <div class="page-content" id="page-employees"></div>
-    <div class="page-content" id="page-attendance"></div>
-    <div class="page-content" id="page-leaves"></div>
-    <div class="page-content" id="page-schedule"></div>
-    <div class="page-content" id="page-payroll"></div>
-    <div class="page-content" id="page-timestamps"></div>
-    <div class="page-content" id="page-holidays"></div>
-    <div class="page-content" id="page-audit"></div>
-    <div class="page-content" id="page-settings"></div>
-  </main>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="section-wrap">
+      <div class="section-header">
+        <div class="section-label">Pricing</div>
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-sub">No hidden fees. No long-term contracts. Cancel anytime.</p>
+      </div>
+      <div class="pricing-grid">
+        <!-- Starter -->
+        <div class="pricing-card">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">₱1,500<span>/mo</span></div>
+          <div class="plan-period">up to 20 employees</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><i class="fa-solid fa-check"></i> Up to 20 employees</li>
+            <li><i class="fa-solid fa-check"></i> Attendance &amp; scheduling</li>
+            <li><i class="fa-solid fa-check"></i> Leave management</li>
+            <li><i class="fa-solid fa-check"></i> Basic payroll export</li>
+          </ul>
+          <button class="btn btn-outline btn-lg" onclick="openModal('signup')">Choose Starter</button>
+        </div>
+
+        <!-- Pro (popular) -->
+        <div class="pricing-card popular">
+          <div class="popular-badge">Most Popular</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">₱3,500<span>/mo</span></div>
+          <div class="plan-period">up to 50 employees</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><i class="fa-solid fa-check"></i> Up to 50 employees</li>
+            <li><i class="fa-solid fa-check"></i> Advanced payroll computation</li>
+            <li><i class="fa-solid fa-check"></i> Multi-level approval flows</li>
+            <li><i class="fa-solid fa-check"></i> Audit logs &amp; IP tracking</li>
+          </ul>
+          <button class="btn btn-primary btn-lg" onclick="openModal('signup')">Choose Pro</button>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="pricing-card">
+          <div class="plan-name">Enterprise</div>
+          <div class="plan-price" style="font-size:2.2rem;">Custom</div>
+          <div class="plan-period">contact us for pricing</div>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li><i class="fa-solid fa-check"></i> Unlimited employees</li>
+            <li><i class="fa-solid fa-check"></i> White-label branding</li>
+            <li><i class="fa-solid fa-check"></i> API access</li>
+            <li><i class="fa-solid fa-check"></i> Dedicated support</li>
+          </ul>
+          <button class="btn btn-outline btn-lg" onclick="window.location.href='mailto:sales@cuckoo.ph'">Contact Sales</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to simplify your payroll?</h2>
+    <p>Start your free 14-day trial today. No credit card required.</p>
+    <button class="btn btn-primary btn-lg" onclick="openModal('signup')">
+      <i class="fa-solid fa-rocket"></i> Create Free Account
+    </button>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>© 2025 Cuckoo. All rights reserved.</div>
+    <div>
+      <a href="terms.html" target="_blank">Terms of Service</a> ·
+      <a href="privacy.html" target="_blank">Privacy Policy</a> ·
+      <a href="#">Contact</a>
+    </div>
+  </footer>
 </div>
-<div class="toast-container" id="toastContainer"></div>
+
+<!-- ========== AUTH MODAL ========== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+  <div class="modal" id="authModal" onclick="event.stopPropagation()">
+    <button class="close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <h3 id="modalTitle">Create Account</h3>
+    <div id="modalError" class="alert alert-error hidden"></div>
+    <form id="authForm" onsubmit="handleAuth(event)">
+      <div class="form-group" id="nameField">
+        <label>Company Name</label>
+        <input type="text" class="form-input" id="companyNameInput" placeholder="Your company name" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-input" id="emailInput" placeholder="admin@company.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-input" id="passwordInput" placeholder="••••••••" required minlength="6">
+      </div>
+      <button type="submit" id="submitBtn" class="btn btn-primary" style="width:100%;margin-top:4px;">Create Account</button>
+    </form>
+    <p style="margin-top:16px;font-size:.85rem;text-align:center;">
+      <span id="switchText">Already have an account? <a href="#" id="switchLink" onclick="switchModal(event)">Log In</a></span>
+    </p>
+    <div style="text-align:center;margin-top:8px;display:none;" id="forgotPwWrap">
+      <a href="#" onclick="sendPasswordReset(); return false;" style="font-size:.75rem;color:var(--text-muted);text-decoration:underline;">Forgot Password?</a>
+    </div>
+  </div>
+</div>
 
 <script>
   const firebaseConfig = {
@@ -84,2306 +212,191 @@
   const db = firebase.database();
   const auth = firebase.auth();
 
-  let companySettings = {};
-  let currentUser = null;
-  let currentCompanyId = null;
-  let companyUsers = {};
-  let companyAttendance = {};
-  let companyLeaves = {};
-  let companyHolidays = {};
-  let companyRoles = {};
-  let companySchedules = {};
-  let currentUserRole = null;
-  let currentPage = 'dashboard';
+  let modalMode = 'signup';
+  let pendingVerification = false;
+  let isSigningUp = false;
 
-  const ALL_PAGES = [
-    { id: 'dashboard',  label: '🏠 Dashboard' },
-    { id: 'employees',  label: '👥 Employees' },
-    { id: 'attendance', label: '🕐 Attendance' },
-    { id: 'leaves',     label: '📅 Leaves' },
-    { id: 'schedule',   label: '🗓 Schedule' },
-    { id: 'payroll',    label: '💳 Payroll' },
-    { id: 'timestamps', label: '📋 Timestamp Sheet' },
-    { id: 'holidays',   label: '📆 Holidays' },
-    { id: 'audit',      label: '🔍 Audit Logs' },
-    { id: 'settings',   label: '⚙️ Settings' },
-  ];
-  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const DOW = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const SC = ['','P','RD','RDS','SL','VL','A','NPL','NPSL','S','UT','HD','BL','PL','ML'];
-
-  const ALL_POWERS = [
-    { id: 'manageEmployees',       label: '👥 Manage Employees',        desc: 'Add, edit, CSV import employees' },
-    { id: 'editAttendance',        label: '🕐 Edit Attendance',          desc: 'Cycle/change attendance cells' },
-    { id: 'approveLeaves',         label: '📅 Approve / Reject Leaves',  desc: 'Approve or reject leave requests' },
-    { id: 'manageHolidays',        label: '📆 Manage Holidays',          desc: 'Add and delete holidays' },
-    { id: 'viewAuditLogs',         label: '🔍 View Audit Logs',          desc: 'Access the audit log page' },
-    { id: 'managePayrollSettings', label: '💳 Manage Payroll Settings',  desc: 'Change payroll computation settings' },
-    { id: 'manageCompanySettings', label: '⚙️ Manage Company Settings',  desc: 'Edit company name, plan, departments' },
-    { id: 'manageRoles',           label: '🔐 Manage Roles',             desc: 'Create, edit, delete custom roles' },
-  ];
-
-  function yearOptions(selYear) {
-    const cur = new Date().getFullYear();
-    return [cur, cur-1, cur-2].map(y => `<option value="${y}"${y===selYear?' selected':''}>${y}</option>`).join('');
+  function openModal(mode) {
+    modalMode = mode;
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('modalError').classList.add('hidden');
+    updateModalUI();
   }
 
-  const toast = (msg, type='info') => {
-    const c = document.getElementById('toastContainer');
-    while (c.children.length >= 3) c.removeChild(c.firstChild);
-    const t = document.createElement('div'); t.className = `toast toast-${type}`; t.textContent = msg; c.appendChild(t);
-    setTimeout(() => t.remove(), 4000);
-  };
-  const esc = s => { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; };
-  // FIX #11: Safe JS string encoding for onclick attributes to prevent quote injection
-  const jsStr = s => JSON.stringify(String(s||''));
-  const sortEmps = () => Object.entries(companyUsers).filter(([,u]) => !u.disabled).sort(([,a],[,b]) => (a.empID||'').localeCompare(b.empID||''));
-  const getCompanyPath = () => `companies/${currentCompanyId}`;
-
-  let _appInitialized = false;
-  auth.onAuthStateChanged(async user => {
-    if (!user) {
-      if (_appInitialized) window.location.href = 'index.html';
-      else setTimeout(() => { if (!auth.currentUser) window.location.href = 'index.html'; }, 1500);
-      return;
-    }
-    if (_appInitialized) return;
-    _appInitialized = true;
-    currentUser = user;
-    document.getElementById('userDisplayName').textContent = user.email;
-    const _safetyTimer = setTimeout(() => dismissLoadingOverlay(), 10000);
-    try { await user.getIdToken(true); } catch(e) {}
-
-    let userData = null;
-    for (let attempt = 1; attempt <= 5; attempt++) {
-      try {
-        const snap = await db.ref(`users/${user.uid}`).once('value');
-        userData = snap.val();
-        if (userData && userData.companyId) break;
-      } catch(e) {}
-      if (attempt < 5) await new Promise(r => setTimeout(r, 800));
-    }
-    if (!userData || !userData.companyId) {
-      try {
-        const companiesSnap = await db.ref('companies').once('value');
-        const companies = companiesSnap.val() || {};
-        for (const [cid, company] of Object.entries(companies)) {
-          if (company.users && company.users[user.uid]) {
-            await db.ref(`users/${user.uid}`).set({ companyId: cid });
-            userData = { companyId: cid }; break;
-          }
-        }
-      } catch(e) {}
-    }
-    if (!userData || !userData.companyId) {
-      clearTimeout(_safetyTimer); dismissLoadingOverlay();
-      document.querySelector('.main-content').innerHTML = `
-        <div style="max-width:480px;margin:80px auto;padding:32px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.1);text-align:center;">
-          <div style="font-size:2rem;margin-bottom:16px;">⚠️</div>
-          <h2 style="margin-bottom:12px;">Account Not Linked</h2>
-          <p style="color:#6b7280;margin-bottom:24px;">Your account (<b>${esc(user.email)}</b>) is not linked to any company.</p>
-          <button class="btn btn-primary" onclick="auth.signOut().then(()=>window.location.href='index.html')">Back to Login</button>
-        </div>`;
-      return;
-    }
-    clearTimeout(_safetyTimer);
-    currentCompanyId = userData.companyId;
-    loadCompanySettings();
-    setupRealtimeListeners();
-    startAutoClockOut();
-  });
-
-  function loadCompanySettings() {
-    db.ref(`${getCompanyPath()}/settings`).once('value', snap => {
-      const s = snap.val() || {};
-      if (s.companyName) document.querySelector('.sidebar-logo').innerHTML = '<div class="sidebar-logo-icon"><i class="fa-solid fa-crow"></i></div> ' + esc(s.companyName);
-    });
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
   }
 
-  let _attListenerKey = null;
-  let _attListenerOff = null;
-  function _subscribeAttendance(mon, year) {
-    const key = `${year}_${mon}`;
-    if (_attListenerKey === key) return;
-    if (_attListenerOff) { _attListenerOff(); _attListenerOff = null; }
-    _attListenerKey = key;
-    const ref = db.ref(`${getCompanyPath()}/attendance`);
-    const cb = snap => { companyAttendance = snap.val() || {}; _scheduleRender(); };
-    ref.on('value', cb);
-    _attListenerOff = () => ref.off('value', cb);
-  }
+  function updateModalUI() {
+    const title      = document.getElementById('modalTitle');
+    const nameField  = document.getElementById('nameField');
+    const switchText = document.getElementById('switchText');
+    const forgotWrap = document.getElementById('forgotPwWrap');
+    const form       = document.getElementById('authForm');
+    const submitBtn  = document.getElementById('submitBtn');
+    form.reset();
 
-  let _renderTimer = null;
-  function _scheduleRender() {
-    if (_renderTimer) return;
-    _renderTimer = requestAnimationFrame(() => { _renderTimer = null; renderCurrentPage(); });
-  }
-
-  let _firstUsersLoad = true;
-  function setupRealtimeListeners() {
-    const base = getCompanyPath();
-    const now = new Date();
-    db.ref(`${base}/users`).on('value', snap => {
-      companyUsers = snap.val() || {};
-      if (currentUser) {
-        const me = companyUsers[currentUser.uid] || {};
-        currentUserRole = me.role || 'Employee';
-      }
-      applyRolePermissions();
-      dismissLoadingOverlay();
-      if (_firstUsersLoad) { _firstUsersLoad = false; switchPage('dashboard'); }
-      else _scheduleRender();
-    });
-    _subscribeAttendance(now.getMonth(), now.getFullYear());
-    db.ref(`${base}/leave_requests`).on('value', snap => { companyLeaves = snap.val() || {}; _scheduleRender(); });
-    db.ref(`${base}/holidays`).on('value', snap => { companyHolidays = snap.val() || {}; _scheduleRender(); });
-    db.ref(`${base}/settings`).on('value', snap => { companySettings = snap.val() || {}; _scheduleRender(); });
-    db.ref(`${base}/roles`).on('value', snap => { companyRoles = snap.val() || {}; applyRolePermissions(); _scheduleRender(); });
-    db.ref(`${base}/schedules`).on('value', snap => { companySchedules = snap.val() || {}; _scheduleRender(); });
-  }
-
-  const PLAN_LIMITS = { starter: 20, pro: 50, enterprise: Infinity };
-  function getPlanLimit() { return PLAN_LIMITS[(companySettings.plan||'starter').toLowerCase()] ?? 20; }
-  function getActiveEmpCount() { return Object.values(companyUsers).filter(u => !u.disabled).length; }
-
-  function isAdmin() {
-    if (!currentUser) return false;
-    return (companyUsers[currentUser.uid]||{}).role === 'Admin';
-  }
-  function canDo(powerId) {
-    if (isAdmin()) return true;
-    const roleData = companyRoles[currentUserRole];
-    if (!roleData || !roleData.powers) return false;
-    return !!roleData.powers[powerId];
-  }
-  function canAccessPage(pageId) {
-    if (isAdmin()) return true;
-    const roleData = companyRoles[currentUserRole];
-    if (!roleData || !roleData.pages) return pageId === 'dashboard';
-    return !!roleData.pages[pageId];
-  }
-  function applyRolePermissions() {
-    document.querySelectorAll('.sidebar-item[data-page]').forEach(el => {
-      el.style.display = canAccessPage(el.dataset.page) ? '' : 'none';
-    });
-    if (!canAccessPage(currentPage)) switchPage('dashboard');
-  }
-
-  document.querySelectorAll('.sidebar-item').forEach(el => el.addEventListener('click', () => switchPage(el.dataset.page)));
-
-  function switchPage(page) {
-    if (!canAccessPage(page)) { toast('Access denied.', 'error'); return; }
-    if (_renderTimer) { cancelAnimationFrame(_renderTimer); _renderTimer = null; }
-    if (currentPage === 'dashboard' && page !== 'dashboard') {
-      if (window._clockInterval) { clearInterval(window._clockInterval); window._clockInterval = null; }
-    }
-    currentPage = page;
-    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-    const navEl = document.querySelector(`.sidebar-item[data-page="${page}"]`);
-    if (navEl) navEl.classList.add('active');
-    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-    document.getElementById(`page-${page}`).classList.add('active');
-    document.getElementById('pageTitle').textContent = page.charAt(0).toUpperCase() + page.slice(1);
-    showPageSpinner(page);
-    renderCurrentPage();
-  }
-
-  function renderCurrentPage() {
-    const renderers = {
-      dashboard: renderDashboard, employees: renderEmployees, attendance: renderAttendance,
-      schedule: renderSchedule, leaves: renderLeaves, payroll: renderPayroll,
-      timestamps: renderTimestamps, holidays: renderHolidays, audit: renderAudit, settings: renderSettings
-    };
-    if (renderers[currentPage]) renderers[currentPage]();
-  }
-
-  let _overlayDismissed = false;
-  function dismissLoadingOverlay() {
-    if (_overlayDismissed) return;
-    _overlayDismissed = true;
-    const ov = document.getElementById('appLoadingOverlay');
-    if (ov) { ov.classList.add('fade-out'); setTimeout(() => ov.remove(), 450); }
-  }
-
-  function showPageSpinner(pageId) {
-    const el = document.getElementById('page-' + pageId);
-    if (el && !el.innerHTML.trim()) {
-      el.innerHTML = `<div class="spinner-wrap"><div class="spinner"></div><span style="font-size:.875rem;color:var(--text-muted);">Loading…</span></div>`;
-    }
-  }
-
-  // ==================== DASHBOARD ====================
-  function renderDashboard() {
-    const now = new Date();
-    const uid = currentUser.uid;
-    const userData = companyUsers[uid] || {};
-    const shift = userData['shift_'+now.getMonth()] || userData.defaultShift || '—';
-    const totalEmp = Object.values(companyUsers).filter(u => !u.disabled).length;
-    let presentToday = 0;
-    const todayKey = `${now.getMonth()}_${now.getDate()}`;
-    Object.values(companyAttendance).forEach(att => { if (att && att[todayKey] === 'P') presentToday++; });
-    const pendingLeaves = Object.values(companyLeaves).filter(l => l.status === 'Pending').length;
-    const myAtt = companyAttendance[uid] || {};
-    const isClockedIn = myAtt[todayKey] === 'P' && myAtt[todayKey+'_time'] && !myAtt[todayKey+'_out'];
-    document.getElementById('page-dashboard').innerHTML = `
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-label">Employees</div><div class="stat-num">${totalEmp}</div></div>
-        <div class="stat-card"><div class="stat-label">Present Today</div><div class="stat-num">${presentToday}</div></div>
-        <div class="stat-card"><div class="stat-label">Pending Leaves</div><div class="stat-num">${pendingLeaves}</div></div>
-        <div class="stat-card"><div class="stat-label">My Shift</div><div class="stat-num" style="font-size:1.2rem;">${esc(shift)}</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">Quick Clock</div></div>
-        <div class="clock-widget">
-          <div class="clock-time" id="liveClock">00:00:00</div>
-          <div class="clock-date" id="liveDate"></div>
-          <button id="btnClockIn" class="clock-btn in${isClockedIn?' hidden':''}" onclick="clockAction('IN')">▶ Clock In</button>
-          <button id="btnClockOut" class="clock-btn out${!isClockedIn?' hidden':''}" onclick="clockAction('OUT')">■ Clock Out</button>
-        </div>
-      </div>`;
-    updateClock();
-    if (window._clockInterval) clearInterval(window._clockInterval);
-    window._clockInterval = setInterval(updateClock, 1000);
-  }
-
-  function updateClock() {
-    const now = new Date();
-    const cl = document.getElementById('liveClock'); if (cl) cl.textContent = now.toLocaleTimeString();
-    const dl = document.getElementById('liveDate'); if (dl) dl.textContent = now.toLocaleDateString('en-PH', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  }
-  function updateClockButtons(isClockedIn) {
-    document.getElementById('btnClockIn')?.classList.toggle('hidden', isClockedIn);
-    document.getElementById('btnClockOut')?.classList.toggle('hidden', !isClockedIn);
-  }
-
-  async function clockAction(type) {
-    const now = new Date();
-    const mon = now.getMonth(); const day = now.getDate();
-    const key = `${mon}_${day}`;
-    const uid = currentUser.uid;
-    // FIX #3: Always read fresh attendance snapshot from DB to avoid stale state race condition
-    const freshSnap = await db.ref(`${getCompanyPath()}/attendance/${uid}`).once('value');
-    const att = freshSnap.val() || {};
-    const userData = companyUsers[uid] || {};
-
-    if (type === 'IN') {
-      if (att[key] === 'P' && att[key+'_time'] && !att[key+'_out']) { toast('Already clocked in.', 'error'); return; }
-      let lateMin = 0;
-      const timeSlot = (userData['shift_'+mon] || userData.defaultShift || '').trim();
-      if (timeSlot) {
-        const startRaw = timeSlot.split(/[-–]/)[0].trim();
-        const match = startRaw.match(/(\d{1,2}):?(\d{2})?\s*(AM|PM)?/i);
-        if (match) {
-          let sh = parseInt(match[1]), sm = parseInt(match[2]||'0'), ampm = (match[3]||'').toUpperCase();
-          if (ampm === 'PM' && sh < 12) sh += 12;
-          if (ampm === 'AM' && sh === 12) sh = 0;
-          const shiftStart = new Date(now);
-          shiftStart.setHours(sh, sm, 0, 0);
-          // Handle overnight shifts: if shift starts in the evening (>=18) and current time is early morning, shift started yesterday
-          if (sh >= 18 && now.getHours() < 12) shiftStart.setDate(shiftStart.getDate()-1);
-          // If shift starts early morning (<6) and current time is late evening, shift starts tomorrow
-          if (sh < 6 && now.getHours() >= 18) shiftStart.setDate(shiftStart.getDate()+1);
-          const diff = now - shiftStart;
-          if (diff > 0) lateMin = Math.floor(diff / 60000);
-        }
-      }
-      const upd = { [key]: 'P', [key+'_time']: now.toISOString(), [key+'_late']: lateMin };
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        if (res.ok) { const ipData = await res.json(); if (ipData.ip) upd[key+'_ip'] = ipData.ip; if (ipData.org||ipData.isp) upd[key+'_isp'] = ipData.org||ipData.isp; }
-      } catch(e) {}
-      await db.ref(`${getCompanyPath()}/attendance/${uid}`).update(upd);
-      await db.ref(`${getCompanyPath()}/audit_logs`).push({ name: currentUser.email, action: `CLOCK IN${lateMin?' ('+lateMin+'m late)':''}`, timestamp: now.toISOString(), empID: uid });
-      toast(lateMin ? `Clocked in – ${lateMin} min late` : 'Clocked in!', 'success');
-      updateClockButtons(true);
+    if (modalMode === 'login') {
+      title.innerText = 'Log In';
+      nameField.style.display = 'none';
+      switchText.innerHTML = `Don't have an account? <a href="#" id="switchLink" onclick="switchModal(event)">Sign Up</a>`;
+      if (submitBtn) submitBtn.textContent = 'Log In';
+      document.getElementById('companyNameInput').removeAttribute('required');
+      forgotWrap.style.display = 'block';
     } else {
-      // FIX #3 + #8: Fresh read, and check both today AND yesterday for overnight shifts
-      let activeKey = null;
-
-      // Check today first
-      if (att[key+'_time'] && !att[key+'_out']) {
-        activeKey = key;
-      } else {
-        // Check yesterday (handles overnight shift clock-out)
-        const yesterday = new Date(now);
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yKey = `${yesterday.getMonth()}_${yesterday.getDate()}`;
-        // Re-fetch yesterday's data if needed (different month boundary)
-        const ySnap = await db.ref(`${getCompanyPath()}/attendance/${uid}/${yKey+'_time'}`).once('value');
-        const yOutSnap = await db.ref(`${getCompanyPath()}/attendance/${uid}/${yKey+'_out'}`).once('value');
-        if (ySnap.val() && !yOutSnap.val()) {
-          activeKey = yKey;
-        }
-      }
-
-      if (!activeKey) { toast('No active clock-in found.', 'error'); return; }
-      // Check again with fresh data if already clocked out
-      const outCheck = await db.ref(`${getCompanyPath()}/attendance/${uid}/${activeKey+'_out'}`).once('value');
-      if (outCheck.val()) { toast('Already clocked out.', 'error'); return; }
-
-      await db.ref(`${getCompanyPath()}/attendance/${uid}`).update({ [activeKey+'_out']: now.toISOString() });
-      await db.ref(`${getCompanyPath()}/audit_logs`).push({ name: currentUser.email, action: 'CLOCK OUT', timestamp: now.toISOString(), empID: uid });
-      toast('Clocked out!', 'success');
-      updateClockButtons(false);
+      title.innerText = 'Create Account';
+      nameField.style.display = 'flex';
+      switchText.innerHTML = `Already have an account? <a href="#" id="switchLink" onclick="switchModal(event)">Log In</a>`;
+      if (submitBtn) submitBtn.textContent = 'Create Account';
+      document.getElementById('companyNameInput').setAttribute('required', '');
+      forgotWrap.style.display = 'none';
     }
   }
 
-  // FIX #8: Auto clock-out now also checks yesterday's key for overnight shifts
-  function startAutoClockOut() {
-    if (window._autoClockInterval) clearInterval(window._autoClockInterval);
-    window._autoClockInterval = setInterval(async () => {
-      if (!currentUser || !currentCompanyId) return;
-      const uid = currentUser.uid;
-      const now = new Date();
-
-      // Check today
-      const todayKey = `${now.getMonth()}_${now.getDate()}`;
-      // Check yesterday (overnight shifts)
-      const yesterday = new Date(now);
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayKey = `${yesterday.getMonth()}_${yesterday.getDate()}`;
-
-      const keysToCheck = [todayKey, yesterdayKey];
-
-      for (const checkKey of keysToCheck) {
-        const snap = await db.ref(`${getCompanyPath()}/attendance/${uid}`).once('value');
-        const att = snap.val() || {};
-        if (att[checkKey] === 'P' && att[checkKey+'_time'] && !att[checkKey+'_out']) {
-          const inTime = new Date(att[checkKey+'_time']);
-          if (now - inTime >= 12 * 60 * 60 * 1000) {
-            await db.ref(`${getCompanyPath()}/attendance/${uid}`).update({ [checkKey+'_out']: now.toISOString(), [checkKey+'_auto']: true });
-            await db.ref(`${getCompanyPath()}/audit_logs`).push({ name: 'System', action: 'AUTO CLOCK OUT (12hrs)', timestamp: now.toISOString(), empID: uid });
-            toast('Auto clocked out after 12 hours.', 'info');
-          }
-        }
-      }
-    }, 60000);
-  }
-
-  // ==================== EMPLOYEES ====================
-  function renderEmployees() {
-    const emps = sortEmps();
-    const adminOnly = canDo('manageEmployees');
-    const roleNames = Object.keys(companyRoles).length ? Object.keys(companyRoles) : ['Employee', 'Admin', 'HR', 'OPS'];
-    const deptOptions = (companySettings.departments || 'RC,CSR').split(',').map(d => d.trim()).filter(Boolean);
-    let html = `
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Employee Directory</div>
-          ${adminOnly ? `<div style="display:flex;gap:8px;">
-            <button class="btn btn-ghost btn-sm" onclick="triggerCSVImport()"><i class="fa-solid fa-file-csv"></i> CSV Import</button>
-            <button class="btn btn-primary" onclick="showAddEmp()"><i class="fa-solid fa-plus"></i> Add Employee</button>
-          </div>` : ''}
-        </div>
-        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Dept</th><th>Role</th>${adminOnly?'<th>Actions</th>':''}</tr></thead><tbody>`;
-    emps.forEach(([uid, u]) => {
-      html += `<tr><td>${esc(u.empID||uid)}</td><td><b>${esc(u.fullName)}</b></td>
-        <td style="font-size:12px;color:var(--text-muted)">${esc(u.email||'')}</td>
-        <td>${esc(u.dept||'')}</td>
-        <td><span style="background:#e0e7ff;color:#3730a3;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;">${esc(u.role||'Employee')}</span></td>
-        ${adminOnly ? `<td style="display:flex;gap:6px;flex-wrap:wrap;">
-          <button class="btn btn-sm btn-ghost" onclick="editEmp(${jsStr(uid)})">✏️ Edit</button>
-          ${(companySettings.customColumns||[]).length?`<button class="btn btn-sm btn-ghost" onclick="showEmpCustomCols(${jsStr(uid)})" title="Override custom column amounts">💰</button>`:''}
-        </td>` : ''}
-      </tr>`;
-    });
-    if (!emps.length) html += `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">No employees yet.</td></tr>`;
-    html += `</tbody></table></div></div>`;
-    if (adminOnly) {
-      html += `
-      <div class="card hidden" id="csvImportModal" style="border:2px dashed var(--primary);">
-        <div class="card-header"><div class="card-title">📂 CSV Import</div><button class="btn btn-ghost btn-sm" onclick="cancelCSVImport()">✕</button></div>
-        <div style="margin-bottom:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px;font-size:.8rem;color:#0369a1;">
-          <b>Columns:</b> <code>fullName, email, dept, role, monthlySalary, empID</code>
-        </div>
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-          <input type="file" id="csvFileInput" accept=".csv" class="form-input" style="max-width:320px;" onchange="previewCSV(this)">
-          <a href="#" onclick="downloadCSVTemplate(event)" class="btn btn-ghost btn-sm">⬇ Template</a>
-        </div>
-        <div id="csvPreviewArea" style="display:none;">
-          <div style="font-weight:600;font-size:.85rem;margin-bottom:8px;" id="csvPreviewLabel"></div>
-          <div class="table-wrap" style="max-height:260px;overflow-y:auto;"><table id="csvPreviewTable" style="font-size:.8rem;"></table></div>
-          <div id="csvImportAlert" class="alert hidden" style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;margin-top:8px;"></div>
-          <div style="display:flex;gap:8px;margin-top:12px;">
-            <button class="btn btn-primary" onclick="doCSVImport()"><i class="fa-solid fa-user-plus"></i> Import All</button>
-            <button class="btn btn-ghost" onclick="cancelCSVImport()">Cancel</button>
-          </div>
-        </div>
-      </div>
-      <div class="card hidden" id="empForm">
-        <div class="card-header"><div class="card-title" id="empFormTitle">Add Employee</div><button class="btn btn-ghost btn-sm" onclick="cancelEmp()">✕</button></div>
-        <div id="empFormAlert" class="alert hidden" style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;"></div>
-        <form onsubmit="saveEmp(event)">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="efName" required></div>
-            <div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="efEmail" required></div>
-            <div class="form-group" id="efPassGroup"><label class="form-label">Password * (min 6 chars)</label><input type="password" class="form-input" id="efPass" minlength="6"></div>
-            <div class="form-group"><label class="form-label">Department</label><select class="form-select" id="efDept">${deptOptions.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('')}</select></div>
-            <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="efRole">${roleNames.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('')}</select></div>
-            <div class="form-group"><label class="form-label">Monthly Salary (₱)</label><input type="number" class="form-input" id="efSalary" value="0" min="0" oninput="if(this.value<0)this.value=0;"></div>
-            <div class="form-group"><label class="form-label">Employee ID (auto if blank)</label><input class="form-input" id="efEmpID" placeholder="e.g. EMP004"></div>
-          </div>
-          <div style="margin-top:12px;display:flex;gap:8px;">
-            <button type="submit" class="btn btn-primary" id="saveEmpBtn"><i class="fa-solid fa-floppy-disk"></i> Save Employee</button>
-            <button type="button" class="btn btn-ghost" onclick="cancelEmp()">Cancel</button>
-          </div>
-        </form>
-      </div>`;
-    }
-    document.getElementById('page-employees').innerHTML = html;
-  }
-
-  let editingEmpId = null;
-  function showAddEmp() {
-    editingEmpId = null;
-    ['efName','efEmail','efPass','efEmpID'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
-    document.getElementById('efSalary').value = '0';
-    document.getElementById('efPassGroup').style.display = '';
-    document.getElementById('efPass').setAttribute('required', '');
-    document.getElementById('empFormTitle').textContent = 'Add Employee';
-    const al = document.getElementById('empFormAlert'); if(al){ al.classList.add('hidden'); al.textContent=''; }
-    document.getElementById('empForm').classList.remove('hidden');
-    document.getElementById('empForm').scrollIntoView({ behavior: 'smooth' });
-  }
-  function cancelEmp() { document.getElementById('empForm')?.classList.add('hidden'); }
-
-  let _csvRows = [];
-  function triggerCSVImport() { document.getElementById('csvImportModal')?.classList.remove('hidden'); document.getElementById('csvImportModal')?.scrollIntoView({behavior:'smooth'}); }
-  function cancelCSVImport() { document.getElementById('csvImportModal')?.classList.add('hidden'); _csvRows = []; }
-  function downloadCSVTemplate(e) {
+  function switchModal(e) {
     e.preventDefault();
-    const csv = 'fullName,email,dept,role,monthlySalary,empID\nJuan dela Cruz,juan@example.com,RC,Employee,20000,EMP001';
-    const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'employees_template.csv'; a.click();
+    modalMode = modalMode === 'login' ? 'signup' : 'login';
+    updateModalUI();
   }
-  function parseCSVLine(line) {
-    // Properly handles quoted fields that may contain commas or escaped quotes
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (inQ && line[i+1] === '"') { cur += '"'; i++; } // escaped quote
-        else inQ = !inQ;
-      } else if (ch === ',' && !inQ) {
-        cols.push(cur.trim()); cur = '';
-      } else {
-        cur += ch;
-      }
-    }
-    cols.push(cur.trim());
-    return cols;
-  }
-  function parseCSV(text) {
-    const lines = text.trim().split(/\r?\n/);
-    if (lines.length < 2) return { headers: [], rows: [] };
-    const headers = parseCSVLine(lines[0]);
-    const rows = lines.slice(1).map(line => {
-      const cols = parseCSVLine(line);
-      const obj = {}; headers.forEach((h, i) => { obj[h] = cols[i] || ''; }); return obj;
-    });
-    return { headers, rows };
-  }
-  function previewCSV(input) {
-    const file = input.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const { headers, rows } = parseCSV(e.target.result);
-      _csvRows = rows;
-      document.getElementById('csvPreviewLabel').textContent = `Found ${rows.length} employee(s):`;
-      let html = `<thead><tr>${headers.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>`;
-      rows.slice(0,20).forEach(r => { html += `<tr>${headers.map(h=>`<td>${esc(r[h]||'')}</td>`).join('')}</tr>`; });
-      html += '</tbody>';
-      document.getElementById('csvPreviewTable').innerHTML = html;
-      document.getElementById('csvPreviewArea').style.display = '';
-    };
-    reader.readAsText(file);
-  }
-  async function doCSVImport() {
-    if (!canDo('manageEmployees')) { toast('Access denied', 'error'); return; }
-    if (!_csvRows.length) { toast('No rows to import', 'error'); return; }
-    const btn = document.querySelector('#csvImportModal .btn-primary');
-    if (btn) { btn.disabled=true; btn.textContent='Importing…'; }
-    let imported=0, skipped=0, errors=[];
-    const empLimit = getPlanLimit();
-    // FIX #4: Get fresh count once BEFORE the loop, increment manually to avoid stale realtime snapshot
-    let currentCount = getActiveEmpCount();
-    for (const row of _csvRows) {
-      const name = row.fullName||row.name||'';
-      if (!name) { skipped++; continue; }
-      // FIX #4: Use locally tracked count instead of re-calling getActiveEmpCount() each iteration
-      if (currentCount + imported >= empLimit) { errors.push(`Employee limit of ${empLimit} reached. Remaining rows skipped.`); break; }
-      const empID = row.empID||row.id||('EMP'+String(Date.now()).slice(-5));
-      try {
-        await db.ref(`${getCompanyPath()}/users`).push({ fullName:name, email:row.email||'', dept:row.dept||'', role:row.role||'Employee', monthlySalary:parseFloat(row.monthlySalary||0)||0, empID });
-        imported++;
-      } catch(err) { errors.push(name+': '+err.message); }
-    }
-    if (btn) { btn.disabled=false; btn.textContent='Import All'; }
-    const al = document.getElementById('csvImportAlert');
-    if (errors.length && al) { al.textContent = errors.join('; '); al.classList.remove('hidden'); }
-    toast(`Imported ${imported}${skipped?' ('+skipped+' skipped)':''}`, imported?'success':'error');
-    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`CSV IMPORT: ${imported}`, timestamp:new Date().toISOString() });
-    if (imported > 0) cancelCSVImport();
-  }
-  function editEmp(uid) {
-    const u = companyUsers[uid]; if (!u) return;
-    editingEmpId = uid;
-    document.getElementById('empFormTitle').textContent = 'Edit Employee';
-    document.getElementById('efName').value = u.fullName||'';
-    document.getElementById('efEmail').value = u.email||'';
-    document.getElementById('efPass').value = '';
-    document.getElementById('efDept').value = u.dept||'';
-    document.getElementById('efRole').value = u.role||'Employee';
-    document.getElementById('efSalary').value = u.monthlySalary||0;
-    document.getElementById('efEmpID').value = u.empID||'';
-    document.getElementById('efPassGroup').style.display = 'none';
-    document.getElementById('efPass').removeAttribute('required');
-    const al = document.getElementById('empFormAlert'); if(al){ al.classList.add('hidden'); al.textContent=''; }
-    document.getElementById('empForm').classList.remove('hidden');
-    document.getElementById('empForm').scrollIntoView({ behavior: 'smooth' });
-  }
-  async function saveEmp(e) {
+
+  async function handleAuth(e) {
     e.preventDefault();
-    if (!canDo('manageEmployees')) { toast('Access denied.', 'error'); return; }
-    const saveBtn = document.getElementById('saveEmpBtn');
-    const name = document.getElementById('efName').value.trim();
-    const email = document.getElementById('efEmail').value.trim();
-    const dept = document.getElementById('efDept').value;
-    const role = document.getElementById('efRole').value;
-    const salary = Math.max(0, parseFloat(document.getElementById('efSalary').value)||0);
-    const customEmpID = document.getElementById('efEmpID').value.trim();
-    const alertEl = document.getElementById('empFormAlert');
-    if(alertEl){ alertEl.classList.add('hidden'); alertEl.textContent=''; }
-    if (!name||!email) return showEmpError('Name and email required.');
-    if (editingEmpId) {
-      // FIX #2: Check for duplicate email when editing (exclude the current employee)
-      const emailLower = email.toLowerCase();
-      const emailConflict = Object.entries(companyUsers).find(([uid, u]) => uid !== editingEmpId && (u.email||'').toLowerCase() === emailLower && !u.disabled);
-      if (emailConflict) return showEmpError(`Email "${esc(email)}" is already used by another employee.`);
-      // FIX #4: Check for duplicate empID when editing (exclude the current employee)
-      if (customEmpID) {
-        const idConflict = Object.entries(companyUsers).find(([uid, u]) => uid !== editingEmpId && (u.empID||'') === customEmpID && !u.disabled);
-        if (idConflict) return showEmpError(`Employee ID "${esc(customEmpID)}" is already in use.`);
-      }
-      saveBtn.disabled=true; saveBtn.textContent='Saving...';
-      try {
-        await db.ref(`${getCompanyPath()}/users/${editingEmpId}`).update({ fullName:name,email,dept,role,monthlySalary:salary,...(customEmpID?{empID:customEmpID}:{}) });
-        await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`EDIT EMPLOYEE: ${name}`, timestamp:new Date().toISOString() });
-        toast('Employee updated!','success'); cancelEmp(); editingEmpId=null;
-      } catch(err) { showEmpError('Error: '+err.message); }
-      finally { saveBtn.disabled=false; saveBtn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Employee'; }
-    } else {
-      const pass = document.getElementById('efPass').value;
-      if (pass.length < 6) return showEmpError('Password must be at least 6 characters.');
-      const emailLower = email.toLowerCase();
-      if (Object.values(companyUsers).find(u => (u.email||'').toLowerCase()===emailLower)) return showEmpError(`Email "${esc(email)}" already exists.`);
-      if (getActiveEmpCount() >= getPlanLimit()) return showEmpError(`Employee limit (${getPlanLimit()}) reached.`);
-      // FIX #4: Validate duplicate empID on new employee
-      const allEmps = Object.values(companyUsers);
-      const maxNum = allEmps.reduce((max,u) => { const n=parseInt((u.empID||'').replace(/\D/g,''))||0; return n>max?n:max; },0);
-      const newEmpID = customEmpID||('EMP'+String(maxNum+1).padStart(3,'0'));
-      if (customEmpID && allEmps.find(u => (u.empID||'') === customEmpID && !u.disabled)) return showEmpError(`Employee ID "${esc(customEmpID)}" is already in use.`);
-      saveBtn.disabled=true; saveBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
-      try {
-        let secondaryApp;
-        // FIX #12: Separate try/catch for app initialization vs user creation for clearer error handling
-        try { secondaryApp = firebase.app('secondary'); }
-        catch(_) {
-          try { secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary'); }
-          catch(initErr) { throw new Error('Failed to initialize auth service: ' + initErr.message); }
+    const email    = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('passwordInput').value;
+    const errorEl  = document.getElementById('modalError');
+    errorEl.classList.add('hidden');
+    errorEl.className = 'alert alert-error hidden';
+
+    try {
+      if (modalMode === 'signup') {
+        const companyName = document.getElementById('companyNameInput').value.trim();
+        if (!companyName) { showError('Please enter a company name'); return; }
+
+        isSigningUp = true;
+        const userCred = await auth.createUserWithEmailAndPassword(email, password);
+        const uid = userCred.user.uid;
+
+        const companyRef = db.ref('companies').push();
+        const companyId  = companyRef.key;
+
+        try { await userCred.user.getIdToken(true); } catch(e) { console.warn('Token refresh:', e.message); }
+
+        try {
+          await db.ref(`users/${uid}`).set({ companyId });
+        } catch(e) {
+          console.warn('First /users write failed, retrying in 1s:', e.message);
+          await new Promise(r => setTimeout(r, 1000));
+          await db.ref(`users/${uid}`).set({ companyId });
         }
-        const secondaryAuth = secondaryApp.auth();
-        const userCred = await secondaryAuth.createUserWithEmailAndPassword(email, pass);
-        const newUid = userCred.user.uid;
-        await secondaryAuth.signOut();
-        await db.ref(`users/${newUid}`).set({ companyId:currentCompanyId });
-        await db.ref(`${getCompanyPath()}/users/${newUid}`).set({ fullName:name, email, dept, role, monthlySalary:salary, empID:newEmpID });
-        await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`ADD EMPLOYEE: ${name} (${newEmpID})`, timestamp:new Date().toISOString() });
-        toast(`Employee "${name}" added! ID: ${newEmpID}`,'success'); cancelEmp(); editingEmpId=null;
-      } catch(err) {
-        if (err.code==='auth/email-already-in-use') showEmpError('Email already registered.');
-        else showEmpError('Error: '+err.message);
-      } finally { saveBtn.disabled=false; saveBtn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Employee'; }
-    }
-  }
-  function showEmpError(msg) {
-    const al = document.getElementById('empFormAlert');
-    if (al) { al.textContent=msg; al.classList.remove('hidden'); } else toast(msg,'error');
-  }
 
-  function showEmpCustomCols(uid) {
-    const u = companyUsers[uid]||{};
-    const cols = companySettings.customColumns||[];
-    if (!cols.length) return toast('No custom columns defined yet. Add them in Settings → Custom Columns.','info');
-    const overrides = u.customColOverrides||{};
-    document.getElementById('empCustomColOverlay')?.remove();
-    const overlay = document.createElement('div');
-    overlay.id = 'empCustomColOverlay';
-    overlay.className = 'payslip-overlay';
-    const rows = cols.map(col => {
-      const override = overrides[col.name];
-      const hasOverride = override !== undefined && override !== '';
-      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
-        <div style="flex:1;">
-          <div style="font-weight:600;font-size:.875rem;">${esc(col.name)}</div>
-          <div style="font-size:11px;color:var(--text-muted);">Default: ${col.calc==='pct_basic'?col.amount+'%':'₱'+col.amount} · ${col.type==='earning'?'+ Earning':'− Deduction'}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
-          <label style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Override Amount</label>
-          <input type="number" min="0" class="form-input" style="width:120px;" id="eccol_${esc(col.name.replace(/\s/g,'_'))}" value="${hasOverride?override:''}" placeholder="Use default" oninput="if(this.value<0)this.value=0;">
-        </div>
-      </div>`;
-    }).join('');
-    overlay.innerHTML = `
-      <div class="payslip-box">
-        <div style="font-size:1.1rem;font-weight:800;margin-bottom:4px;">💰 Custom Column Overrides</div>
-        <div style="font-size:.85rem;color:var(--text-muted);margin-bottom:16px;">Set a different amount for <b>${esc(u.fullName)}</b>. Leave blank to use the company default.</div>
-        ${rows}
-        <div style="display:flex;gap:8px;margin-top:16px;">
-          <button class="btn btn-primary" onclick="saveEmpCustomCols(${jsStr(uid)})">💾 Save Overrides</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('empCustomColOverlay').remove()">Cancel</button>
-        </div>
-      </div>`;
-    overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
-    document.body.appendChild(overlay);
-  }
-
-  async function saveEmpCustomCols(uid) {
-    const cols = companySettings.customColumns||[];
-    // FIX #6: Start with existing overrides and selectively update/delete
-    // Blank input = remove the override (revert to company default)
-    const existingOverrides = (companyUsers[uid]||{}).customColOverrides || {};
-    const overrides = { ...existingOverrides };
-    cols.forEach(col => {
-      const inputId = 'eccol_'+col.name.replace(/\s/g,'_');
-      const val = document.getElementById(inputId)?.value?.trim();
-      if (val !== '' && val !== undefined && val !== null) {
-        overrides[col.name] = parseFloat(val);
-      } else {
-        // Blank = clear override, fall back to company default
-        delete overrides[col.name];
-      }
-    });
-    await db.ref(`${getCompanyPath()}/users/${uid}`).update({ customColOverrides: overrides });
-    document.getElementById('empCustomColOverlay')?.remove();
-    toast('Overrides saved!','success');
-  }
-
-  // ==================== ATTENDANCE ====================
-  function renderAttendance() {
-    const now = new Date();
-    const savedMon = document.getElementById('attMonth')?.value;
-    const savedYear = document.getElementById('attYear')?.value;
-    const savedPeriod = document.getElementById('attPeriod')?.value;
-    const savedShift = document.getElementById('attShiftFilter')?.value || '';
-    const mon = savedMon !== undefined && savedMon !== '' ? parseInt(savedMon) : now.getMonth();
-    const year = savedYear !== undefined && savedYear !== '' ? parseInt(savedYear) : now.getFullYear();
-    _subscribeAttendance(mon, year);
-    const dim = new Date(year, mon+1, 0).getDate();
-    const perVal = savedPeriod || (now.getDate()<=15?'1-15':'16-31');
-    let pS=1, pE=dim;
-    if (perVal==='1-15') pE=15; else if (perVal==='16-31') pS=16;
-    const shiftFilter = savedShift.trim().toLowerCase();
-    const DOW_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const holMap = {};
-    Object.values(companyHolidays).forEach(h => {
-      if (!h||!h.date) return;
-      const hd = new Date(h.date+'T00:00:00');
-      if (hd.getFullYear()===year && hd.getMonth()===mon) holMap[hd.getDate()]=h;
-    });
-
-    // Build header row with day number + day-of-week sub-label
-    let html = `<table style="min-width:${680+(pE-pS+1)*46}px;border-collapse:collapse;">
-      <thead><tr>
-        <th style="min-width:90px;position:sticky;left:0;z-index:2;background:var(--bg);">EMP ID</th>
-        <th style="min-width:160px;">Name</th>
-        <th style="min-width:70px;">Dept</th>
-        <th style="min-width:90px;">Shift</th>`;
-    for (let d=pS; d<=pE; d++) {
-      const hol = holMap[d];
-      const dow = new Date(year,mon,d).getDay();
-      const isWeekend = dow===0||dow===6;
-      const isToday = (year===now.getFullYear()&&mon===now.getMonth()&&d===now.getDate());
-      const holBg = hol ? (hol.type==='regular'?'background:#fffbeb;':'background:#faf5ff;') : (isWeekend?'background:#f8f9fb;':'');
-      const todayStyle = isToday ? 'outline:2px solid var(--primary);outline-offset:-2px;' : '';
-      html += `<th style="text-align:center;min-width:46px;padding:6px 2px;${holBg}${todayStyle}">
-        <div style="font-size:11px;font-weight:700;line-height:1.2;">${d}</div>
-        <div style="font-size:9px;font-weight:500;color:${isWeekend?'#f59e0b':'var(--text-muted)'};">${DOW_SHORT[dow]}</div>
-        ${hol?`<div class="holiday-badge${hol.type==='special'?' special':''}" style="max-width:42px;">${esc(hol.name.slice(0,5))}</div>`:''}
-      </th>`;
-    }
-    html += `<th style="text-align:center;min-width:60px;color:#991b1b;">LATES<br><span style="font-size:9px;font-weight:500;">(MIN)</span></th></tr></thead><tbody>`;
-
-    sortEmps().forEach(([uid,u]) => {
-      const shift = u['shift_'+mon]||u.defaultShift||'';
-      if (shiftFilter && !shift.toLowerCase().includes(shiftFilter)) return;
-      const att = companyAttendance[uid]||{};
-      let totalLate=0;
-
-      // Detect night shift for moon icon
-      const isNight = shift.toLowerCase().includes('night');
-
-      html += `<tr>
-        <td style="font-size:12px;font-weight:700;padding:8px 14px;position:sticky;left:0;background:var(--card);z-index:1;">${esc(u.empID||uid)}</td>
-        <td style="padding:8px 14px;font-weight:600;">${esc(u.fullName)}</td>
-        <td style="padding:8px 14px;font-size:12px;color:var(--text-muted);">${esc(u.dept||'')}</td>
-        <td style="padding:8px 14px;font-size:11px;color:var(--text-muted);">${esc(shift)}${isNight?' 🌙':''}</td>`;
-
-      for (let d=pS; d<=pE; d++) {
-        const k=`${mon}_${d}`, st=att[k]||'', late=parseInt(att[k+'_late']||0);
-        totalLate+=late;
-        const dow = new Date(year,mon,d).getDay();
-        const isWeekend = dow===0||dow===6;
-        const isToday = (year===now.getFullYear()&&mon===now.getMonth()&&d===now.getDate());
-        const hol = holMap[d];
-        const holOutline = hol ? `outline:2px solid ${hol.type==='regular'?'#f59e0b':'#a78bfa'};outline-offset:-1px;` : '';
-        const todayOutline = isToday ? 'outline:2px solid var(--primary);outline-offset:-2px;' : '';
-        // Empty cells on weekends show dim background
-        const weekendEmptyStyle = (!st && isWeekend) ? 'background:#f8f9fb;' : '';
-        const emptyCellStyle = !st ? weekendEmptyStyle : '';
-        html += `<td class="s-${st}" style="padding:4px 2px;text-align:center;cursor:pointer;min-width:46px;font-size:10px;font-weight:700;border-radius:6px;transition:transform .1s;${holOutline||todayOutline}${emptyCellStyle}" onclick="cycleAtt(${jsStr(uid)},${jsStr(k)})" title="${esc(st)||'(empty)'}">
-          ${st ? `<div style="font-size:10px;font-weight:700;line-height:1.3;">${esc(st)}</div>` : '<div style="font-size:10px;color:#d1d5db;">—</div>'}
-          ${late ? `<span class="late-tag">${late}m</span>` : ''}
-        </td>`;
-      }
-      html += `<td class="lates-total" style="padding:8px 6px;">${totalLate ? `<span style="color:#991b1b;font-weight:800;">${totalLate}</span>` : '—'}</td></tr>`;
-    });
-    html += `</tbody></table>`;
-
-    document.getElementById('page-attendance').innerHTML = `
-      <div class="card">
-        <div class="card-header"><div class="card-title">Attendance Grid</div></div>
-        <div class="toolbar">
-          <div class="form-group"><label class="form-label">Shift</label><input type="text" class="form-input" id="attShiftFilter" placeholder="Filter shift…" value="${esc(savedShift)}" oninput="renderAttendance()" style="min-width:120px;"></div>
-          <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="attMonth" onchange="renderAttendance()">${MN.map((m,i)=>`<option value="${i}"${i===mon?' selected':''}>${m}</option>`).join('')}</select></div>
-          <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="attYear" onchange="renderAttendance()">${yearOptions(year)}</select></div>
-          <div class="form-group"><label class="form-label">Period</label><select class="form-select" id="attPeriod" onchange="renderAttendance()"><option value="1-15"${perVal==='1-15'?' selected':''}>1 – 15</option><option value="16-31"${perVal==='16-31'?' selected':''}>16 – End</option></select></div>
-          <div class="form-group"><label class="form-label">Search</label><input type="text" class="form-input" id="attSearch" placeholder="Search…" oninput="searchAtt()"></div>
-          <button class="btn btn-success" onclick="exportAttExcel()">⬇ Export Excel</button>
-          <button class="btn btn-ghost" onclick="autoPostAllRestDays(parseInt(document.getElementById('attMonth').value),parseInt(document.getElementById('attYear').value))" title="Auto-fill Rest Days">🗓 Fill RDs</button>
-        </div>
-        <div id="holLegendBar" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 14px;font-size:11px;margin-bottom:12px;"></div>
-        <div class="table-wrap" id="attTableContainer" style="overflow-x:auto;">${html}</div>
-      </div>`;
-
-    const holDays = Object.keys(holMap).map(Number).filter(d=>d>=pS&&d<=pE);
-    const lb = document.getElementById('holLegendBar');
-    if (lb && holDays.length) {
-      lb.style.display='';
-      lb.innerHTML='🗓️ <strong>Holidays:</strong> '+holDays.map(d=>`<span style="background:${holMap[d].type==='regular'?'#fef3c7':'#ede9fe'};color:${holMap[d].type==='regular'?'#92400e':'#4c1d95'};padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700;margin-left:4px;">${d} – ${esc(holMap[d].name)}</span>`).join('');
-    }
-  }
-
-  // FIX #6: Guard against unknown status codes in cycleAtt
-  async function cycleAtt(uid, key) {
-    if (!canDo('editAttendance')) { toast('No permission to edit attendance.','error'); return; }
-    const cur = (companyAttendance[uid]||{})[key]||'';
-    const idx = SC.indexOf(cur);
-    // If status not found in SC (e.g. legacy/unknown code), start from index 1 (first real status 'P')
-    const nxt = SC[(idx < 0 ? 0 : idx + 1) % SC.length];
-    await db.ref(`${getCompanyPath()}/attendance/${uid}/${key}`).set(nxt);
-    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`Changed ${uid} ${key} → ${nxt}`, timestamp:new Date().toISOString() });
-  }
-
-  async function autoPostAllRestDays(mon, year) {
-    year = year || new Date().getFullYear();
-    const dim = new Date(year,mon+1,0).getDate();
-    for (const [uid,u] of Object.entries(companyUsers)) {
-      if (u.disabled) continue;
-      const off1=u['off1_'+mon]||'', off2=u['off2_'+mon]||'';
-      if (!off1&&!off2) continue;
-      const att=companyAttendance[uid]||{};
-      const updates={};
-      for (let d=1; d<=dim; d++) {
-        const k=`${mon}_${d}`; if (att[k]) continue;
-        const date=new Date(year,mon,d);
-        if (off1===DOW[date.getDay()]||off2===DOW[date.getDay()]) updates[k]='RD';
-      }
-      if (Object.keys(updates).length) await db.ref(`${getCompanyPath()}/attendance/${uid}`).update(updates);
-    }
-    toast('Rest days filled!','success');
-  }
-
-  function searchAtt() {
-    const q=(document.getElementById('attSearch')?.value||'').toLowerCase();
-    document.querySelectorAll('#attTableContainer tbody tr').forEach(r => r.style.display=r.textContent.toLowerCase().includes(q)?'':'none');
-  }
-
-  function exportAttExcel() {
-    const mon=parseInt(document.getElementById('attMonth')?.value??new Date().getMonth());
-    const year=parseInt(document.getElementById('attYear')?.value??new Date().getFullYear());
-    const per=document.getElementById('attPeriod')?.value||'1-15';
-    const dim=new Date(year,mon+1,0).getDate();
-    let pS=1, pE=dim;
-    if(per==='1-15'){pS=1;pE=Math.min(15,dim);}
-    else if(per==='16-31'){pS=16;pE=dim;}
-    const data=[['Emp ID','Name','Dept','Shift']];
-    for(let d=pS;d<=pE;d++) data[0].push('Day '+d);
-    data[0].push('Total Lates (min)');
-    sortEmps().forEach(([uid,u])=>{
-      const att=companyAttendance[uid]||{};
-      const row=[u.empID||uid,u.fullName,u.dept,u['shift_'+mon]||u.defaultShift||''];
-      let tl=0;
-      for(let d=pS;d<=pE;d++){ const k=`${mon}_${d}`,st=att[k]||'',late=parseInt(att[k+'_late']||0); tl+=late; row.push(late?`${st}(${late}m late)`:st); }
-      row.push(tl); data.push(row);
-    });
-    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Attendance');
-    XLSX.writeFile(wb,`Attendance_${MN[mon]}_${pS}-${pE}_${year}.xlsx`);
-  }
-
-  // ==================== LEAVES ====================
-  function renderLeaves() {
-    const leaves=Object.entries(companyLeaves).sort((a,b)=>new Date(b[1].submittedAt||0)-new Date(a[1].submittedAt||0));
-    const canManage=isAdmin()||canDo('approveLeaves')||canDo('manageEmployees');
-    const canApprove=canDo('approveLeaves');
-    // FIX #13: Employee sees leaves where they are the subject (empID) OR submitter — managers see all
-    const visibleLeaves = canManage
-      ? leaves
-      : leaves.filter(([,lv]) => lv.empID === currentUser.uid);
-    const ANNUAL_SL=parseFloat(companySettings.annual_sl??5);
-    const ANNUAL_VL=parseFloat(companySettings.annual_vl??5);
-    const thisYear=new Date().getFullYear();
-    function getLeaveUsed(empUid,type) {
-      return Object.values(companyLeaves).filter(lv=>lv.empID===empUid&&lv.type===type&&lv.status==='Approved').reduce((sum,lv)=>{
-        // FIX #3: Count only days that actually fall within thisYear, not just leaves that start in thisYear
-        const s=new Date(lv.startDate),e=new Date(lv.endDate);
-        const yearStart=new Date(thisYear,0,1), yearEnd=new Date(thisYear,11,31);
-        const effectiveStart=s<yearStart?yearStart:s;
-        const effectiveEnd=e>yearEnd?yearEnd:e;
-        if(effectiveStart>effectiveEnd) return sum;
-        const days=Math.round((effectiveEnd-effectiveStart)/86400000)+1;
-        return sum+(isNaN(days)?0:days);
-      },0);
-    }
-    const balList=canManage?sortEmps().map(([uid,u])=>[uid,u]):[[currentUser.uid,companyUsers[currentUser.uid]||{}]];
-    const balanceRows=balList.map(([uid,u])=>{
-      const slU=getLeaveUsed(uid,'SL'),vlU=getLeaveUsed(uid,'VL');
-      const slL=Math.max(0,ANNUAL_SL-slU),vlL=Math.max(0,ANNUAL_VL-vlU);
-      const bar=(used,total)=>{const pct=total>0?Math.min(100,(used/total)*100):0;const col=pct>=100?'#ef4444':pct>=80?'#f59e0b':'#10b981';return `<div style="height:6px;background:#e5e7eb;border-radius:3px;width:80px;display:inline-block;vertical-align:middle;"><div style="height:6px;background:${col};border-radius:3px;width:${pct}%;"></div></div>`;};
-      return `<tr><td>${esc(u.empID||uid)}</td><td>${esc(u.fullName||uid)}</td><td>${bar(slU,ANNUAL_SL)} ${slU}/${ANNUAL_SL} <span style="font-weight:700;color:${slL===0?'var(--red)':'var(--green)'};">(${slL} left)</span></td><td>${bar(vlU,ANNUAL_VL)} ${vlU}/${ANNUAL_VL} <span style="font-weight:700;color:${vlL===0?'var(--red)':'var(--green)'};">(${vlL} left)</span></td></tr>`;
-    }).join('');
-    let rows='';
-    if (!visibleLeaves.length) rows='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:32px;">No leave requests.</td></tr>';
-    else visibleLeaves.forEach(([lid,lv])=>{
-      const emp=companyUsers[lv.empID]||{};
-      let actions;
-      if(lv.status==='Pending'&&canApprove) actions=`<button class="btn btn-success btn-sm" onclick="approveLeave(${jsStr(lid)})">✓</button><button class="btn btn-danger btn-sm" onclick="rejectLeave(${jsStr(lid)})">✕</button>`;
-      else { const col=lv.status==='Approved'?'var(--green)':lv.status==='Pending'?'var(--amber)':'var(--red)'; actions=`<span style="font-weight:700;color:${col};">${esc(lv.status)}</span>`; }
-      rows+=`<tr><td>${esc(emp.fullName||lv.empID)}</td><td><span style="background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;">${esc(lv.type)}</span></td><td>${esc(lv.startDate)}</td><td>${esc(lv.endDate)}</td><td>${esc(lv.reason||'—')}</td><td style="display:flex;gap:6px;">${actions}</td></tr>`;
-    });
-    const empOptions=canManage?sortEmps().map(([uid,u])=>`<option value="${esc(uid)}">${esc(u.fullName)}</option>`).join(''):
-      `<option value="${esc(currentUser.uid)}">${esc(companyUsers[currentUser.uid]?.fullName||'Me')}</option>`;
-    document.getElementById('page-leaves').innerHTML=`
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-header"><div class="card-title">📊 Leave Balances — ${thisYear}</div></div>
-        <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Sick Leave</th><th>Vacation Leave</th></tr></thead><tbody>${balanceRows}</tbody></table></div>
-      </div>
-      <div class="card"><div class="card-header"><div class="card-title">Leave Requests</div><button class="btn btn-primary" onclick="showLeaveForm()">+ New</button></div>
-      <div class="table-wrap"><table><thead><tr><th>Employee</th><th>Type</th><th>Start</th><th>End</th><th>Reason</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>
-      <div class="card hidden" id="leaveForm"><div class="card-header"><div class="card-title">File a Leave</div></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div class="form-group"><label class="form-label">Employee</label><select class="form-select" id="lfEmp"${!canManage?' disabled':''}>${empOptions}</select></div>
-        <div class="form-group"><label class="form-label">Leave Type</label><select class="form-select" id="lfType"><option>SL</option><option>VL</option><option>PL</option><option>ML</option><option>BL</option><option>NPL</option></select></div>
-        <div class="form-group"><label class="form-label">Start Date</label><input type="date" class="form-input" id="lfStart"></div>
-        <div class="form-group"><label class="form-label">End Date</label><input type="date" class="form-input" id="lfEnd"></div>
-        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Reason</label><textarea class="form-input form-textarea" id="lfReason" rows="2"></textarea></div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-primary" onclick="saveLeave()">Submit</button><button class="btn btn-ghost" onclick="document.getElementById('leaveForm').classList.add('hidden')">Cancel</button></div></div>`;
-  }
-  function showLeaveForm() { document.getElementById('leaveForm').classList.remove('hidden'); }
-  async function saveLeave() {
-    const canManage=isAdmin()||canDo('approveLeaves')||canDo('manageEmployees');
-    const empId=canManage?document.getElementById('lfEmp').value:currentUser.uid;
-    const type=document.getElementById('lfType').value,start=document.getElementById('lfStart').value,end=document.getElementById('lfEnd').value,reason=document.getElementById('lfReason').value.trim();
-    if(!start||!end) return toast('Date required','error');
-    if(new Date(start)>new Date(end)) return toast('Start must be before end','error');
-    // FIX #13: Always store empID so employees can filter their own leaves correctly
-    await db.ref(`${getCompanyPath()}/leave_requests`).push({ empID:empId, type, startDate:start, endDate:end, reason, status:'Pending', submittedAt:new Date().toISOString(), submittedBy:currentUser.uid });
-    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`Filed ${type} for ${companyUsers[empId]?.fullName||empId}`, timestamp:new Date().toISOString() });
-    document.getElementById('leaveForm').classList.add('hidden');
-    toast('Leave filed!','success');
-  }
-  async function approveLeave(lid) {
-    if(!canDo('approveLeaves')){ toast('Access denied.','error'); return; }
-    await db.ref(`${getCompanyPath()}/leave_requests/${lid}`).update({ status:'Approved',reviewedBy:currentUser.uid,reviewedAt:new Date().toISOString() });
-    toast('Approved!','success');
-  }
-  async function rejectLeave(lid) {
-    if(!canDo('approveLeaves')){ toast('Access denied.','error'); return; }
-    await db.ref(`${getCompanyPath()}/leave_requests/${lid}`).update({ status:'Rejected',reviewedBy:currentUser.uid,reviewedAt:new Date().toISOString() });
-    toast('Rejected.','success');
-  }
-
-  // ==================== PAYROLL ENGINE ====================
-  function getPRSettings() {
-    const s = companySettings || {};
-    return {
-      workingDays:    parseFloat(s.pr_workingDays   ?? 26),
-      hoursPerDay:    parseFloat(s.pr_hoursPerDay   ?? 8),
-      ndStart:        parseInt(s.pr_ndStart         ?? 22),
-      ndEnd:          parseInt(s.pr_ndEnd           ?? 6),
-      ndRate:         parseFloat(s.pr_ndRate        ?? 0.10),
-      otRate:         parseFloat(s.pr_otRate        ?? 1.25),
-      regHolRate:     parseFloat(s.pr_regHolRate    ?? 2.00),
-      specHolRate:    parseFloat(s.pr_specHolRate   ?? 1.30),
-      lateMode:       s.pr_lateMode                 ?? 'minute',
-      sssMode:        s.pr_sssMode                  ?? 'auto',
-      sssFixed:       parseFloat(s.pr_sssFixed      ?? 0),
-      phMode:         s.pr_phMode                   ?? 'auto',
-      phFixed:        parseFloat(s.pr_phFixed       ?? 0),
-      phPct:          parseFloat(s.pr_phPct         ?? 0.025),
-      pagibigMode:    s.pr_pagibigMode              ?? 'auto',
-      pagibigFixed:   parseFloat(s.pr_pagibigFixed  ?? 0),
-      pagibigPct:     parseFloat(s.pr_pagibigPct    ?? 0.02),
-      pagibigCap:     parseFloat(s.pr_pagibigCap    ?? 200),
-      sssCap:         parseFloat(s.pr_sssCap        ?? 1350),
-      sssEmployeePct: parseFloat(s.pr_sssEmployeePct ?? 0.045),
-      gracePeriod:    parseInt(s.pr_gracePeriod      ?? 0),
-      payHolPresent:  s.pr_payHolPresent !== false,
-      feat_sl_pay:        s.pr_feat_sl_pay        !== false,
-      feat_vl_pay:        s.pr_feat_vl_pay        !== false,
-      feat_hol_reg:       s.pr_feat_hol_reg       !== false,
-      feat_hol_premium:   s.pr_feat_hol_premium   !== false,
-      feat_nd_pay:        s.pr_feat_nd_pay        !== false,
-      feat_absent_ded:    s.pr_feat_absent_ded    !== false,
-      feat_late_ded:      s.pr_feat_late_ded      !== false,
-      feat_npl_ded:       s.pr_feat_npl_ded       !== false,
-      feat_ut_ded:        s.pr_feat_ut_ded        !== false,
-      feat_sss:           s.pr_feat_sss           !== false,
-      feat_philhealth:    s.pr_feat_philhealth     !== false,
-      feat_pagibig:       s.pr_feat_pagibig        !== false,
-    };
-  }
-
-  function calcNDHours(timeInISO, timeOutISO, ndStart, ndEnd) {
-    if (!timeInISO || !timeOutISO) return 0;
-    const tin=new Date(timeInISO), tout=new Date(timeOutISO);
-    if (tout<=tin) return 0;
-    const wraps=ndStart>ndEnd;
-    const inNDWindow=h=>wraps?(h>=ndStart||h<ndEnd):(h>=ndStart&&h<ndEnd);
-    let ndHours=0, cur=new Date(tin);
-    while (cur<tout) {
-      const next=new Date(Math.min(cur.getTime()+3600000,tout.getTime()));
-      if (inNDWindow(cur.getHours())) ndHours+=(next-cur)/3600000;
-      cur=next;
-    }
-    return ndHours;
-  }
-
-  // FIX #1: Use ?? instead of || for dateFrom/dateTo to handle falsy-but-valid value 0
-  function calcAttendanceSummary(uid, mon, year, dateFrom, dateTo) {
-    const att=companyAttendance[uid]||{};
-    const pr=getPRSettings();
-    const dim=new Date(year,mon+1,0).getDate();
-    const dStart = dateFrom ?? 1;
-    const dEnd   = dateTo   ?? dim;
-    const holMap={};
-    Object.values(companyHolidays).forEach(h=>{
-      if(!h||!h.date) return;
-      const hd=new Date(h.date+'T00:00:00');
-      if(hd.getFullYear()===year&&hd.getMonth()===mon) holMap[hd.getDate()]=h;
-    });
-    let present=0,rd=0,rds=0,sl=0,vl=0,absent=0,npl=0,npsl=0,ut=0,hd=0,lateMin=0;
-    let unworkedRegHolDays=0, workedRegHolDays=0, workedSpecHolDays=0, ndHours=0;
-    for (let d=dStart; d<=dEnd; d++) {
-      const k=`${mon}_${d}`, st=att[k]||'';
-      let rawLate=parseInt(att[k+'_late']||0);
-      if (pr.gracePeriod>0&&rawLate>0) rawLate=Math.max(0,rawLate-pr.gracePeriod);
-      lateMin+=rawLate;
-      const hol=holMap[d];
-      if (st==='P') {
-        present++;
-        if (hol&&pr.payHolPresent) {
-          if (hol.type==='regular') workedRegHolDays++;
-          else if (hol.type==='special') workedSpecHolDays++;
-        }
-        ndHours+=calcNDHours(att[k+'_time'],att[k+'_out'],pr.ndStart,pr.ndEnd);
-      } else if (st==='A') {
-        if (hol&&hol.type==='regular') unworkedRegHolDays++;
-        else absent++;
-      } else if (!st) {
-        if (hol&&hol.type==='regular') unworkedRegHolDays++;
-      } else if (st==='RD') rd++;
-      else if (st==='RDS') rds++;
-      else if (st==='SL') sl++;
-      else if (st==='VL') vl++;
-      else if (st==='NPL') npl++;
-      else if (st==='NPSL') npsl++;
-      else if (st==='UT') ut++;
-      else if (st==='HD') hd++;
-    }
-    return { present,rd,rds,sl,vl,absent,npl,npsl,ut,hd,lateMin,unworkedRegHolDays,workedRegHolDays,workedSpecHolDays,ndHours };
-  }
-
-  function calcGovDeductions(monthlySalary, pr) {
-    let sss=0, philhealth=0, pagibig=0;
-    if (pr.feat_sss) sss = pr.sssMode==='fixed' ? pr.sssFixed : Math.min(pr.sssCap, monthlySalary*pr.sssEmployeePct);
-    if (pr.feat_philhealth) philhealth = pr.phMode==='fixed' ? pr.phFixed : monthlySalary*pr.phPct;
-    if (pr.feat_pagibig) pagibig = pr.pagibigMode==='fixed' ? pr.pagibigFixed : Math.min(pr.pagibigCap, monthlySalary*pr.pagibigPct);
-    return { sss, philhealth, pagibig };
-  }
-
-  function calcPayroll(uid, mon, year, dateFrom, dateTo) {
-    const u=companyUsers[uid]||{};
-    const monthlySalary=parseFloat(u.monthlySalary||0);
-    const pr=getPRSettings();
-    const dailyRate=monthlySalary/pr.workingDays;
-    const hourlyRate=dailyRate/pr.hoursPerDay;
-    const att=calcAttendanceSummary(uid,mon,year,dateFrom,dateTo);
-    const gov=calcGovDeductions(monthlySalary,pr);
-    const lateHours = pr.lateMode==='hour' ? Math.floor(att.lateMin/60) : att.lateMin/60;
-
-    const earningsBreakdown=[];
-    let grossPay=0;
-    const addEarn=(label,amt)=>{ if(amt>0){earningsBreakdown.push({label,amount:amt});grossPay+=amt;} };
-
-    addEarn('Basic Pay', att.present * dailyRate);
-    if (pr.feat_sl_pay) addEarn('Sick Leave Pay', att.sl * dailyRate);
-    if (pr.feat_vl_pay) addEarn('Vacation Leave Pay', att.vl * dailyRate);
-    if (pr.feat_hol_reg) addEarn('Regular Holiday Pay', att.unworkedRegHolDays * dailyRate);
-    if (pr.feat_hol_premium && pr.payHolPresent) {
-      addEarn('Reg. Holiday Premium', att.workedRegHolDays * dailyRate * (pr.regHolRate - 1));
-      addEarn('Special Holiday Premium', att.workedSpecHolDays * dailyRate * (pr.specHolRate - 1));
-    }
-    if (pr.feat_nd_pay) addEarn('Night Differential', att.ndHours * hourlyRate * pr.ndRate);
-
-    // Custom Columns (earnings)
-    const customCols = companySettings.customColumns || [];
-    const empOverrides = companyUsers[uid]?.customColOverrides || {};
-    customCols.filter(c=>c.type==='earning').forEach(col => {
-      const amt = empOverrides[col.name] !== undefined ? parseFloat(empOverrides[col.name]) : parseFloat(col.amount);
-      let value = 0;
-      if (col.calc==='fixed') value = amt;
-      else if (col.calc==='per_day_present') value = amt * att.present;
-      else if (col.calc==='per_day_worked') value = amt * (att.present+att.sl+att.vl);
-      else if (col.calc==='pct_basic') value = (att.present * dailyRate) * (amt/100);
-      addEarn(col.name, value);
-    });
-
-    const deductionsBreakdown=[];
-    let totalDeductions=0;
-    const addDeduct=(label,amt)=>{ if(amt>0){deductionsBreakdown.push({label,amount:amt});totalDeductions+=amt;} };
-
-    if (pr.feat_absent_ded) addDeduct('Absence Deduction', att.absent * dailyRate);
-    if (pr.feat_late_ded) addDeduct('Late Deduction', lateHours * hourlyRate);
-    if (pr.feat_npl_ded) addDeduct('NPL/NPSL Deduction', (att.npl + att.npsl) * dailyRate);
-    if (pr.feat_ut_ded) addDeduct('Undertime Deduction', att.ut * dailyRate * 0.5);
-
-    // Custom Columns (deductions)
-    customCols.filter(c=>c.type==='deduction').forEach(col => {
-      const amt = empOverrides[col.name] !== undefined ? parseFloat(empOverrides[col.name]) : parseFloat(col.amount);
-      let value = 0;
-      if (col.calc==='fixed') value = amt;
-      else if (col.calc==='per_day_present') value = amt * att.present;
-      else if (col.calc==='per_day_worked') value = amt * (att.present+att.sl+att.vl);
-      else if (col.calc==='pct_basic') value = (att.present * dailyRate) * (amt/100);
-      addDeduct(col.name, value);
-    });
-
-    if (pr.feat_sss) addDeduct('SSS', gov.sss);
-    if (pr.feat_philhealth) addDeduct('PhilHealth', gov.philhealth);
-    if (pr.feat_pagibig) addDeduct('Pag-IBIG', gov.pagibig);
-
-    const netPay=grossPay-totalDeductions;
-    return { monthlySalary,dailyRate,hourlyRate,grossPay,totalDeductions,netPay,
-      earningsBreakdown,deductionsBreakdown,
-      present:att.present,sl:att.sl,vl:att.vl,absent:att.absent,lateMin:att.lateMin,
-      unworkedRegHolDays:att.unworkedRegHolDays,
-      sss:gov.sss,philhealth:gov.philhealth,pagibig:gov.pagibig };
-  }
-
-  // ==================== PAYROLL PAGE ====================
-  function renderPayroll() {
-    const now=new Date();
-    const savedMon=document.getElementById('prMon')?.value;
-    const savedYear=document.getElementById('prYear')?.value;
-    const selMon=savedMon!==undefined&&savedMon!==''?parseInt(savedMon):now.getMonth();
-    const selYear=savedYear!==undefined&&savedYear!==''?parseInt(savedYear):now.getFullYear();
-    const perVal=document.getElementById('prPeriod')?.value||'full';
-    const emps=sortEmps();
-    const dim=new Date(selYear,selMon+1,0).getDate();
-    let pFrom=1,pTo=dim;
-    if(perVal==='1-15'){pFrom=1;pTo=15;}
-    if(perVal==='16-31'){pFrom=16;pTo=dim;}
-    let rows='',totGross=0,totNet=0,totDeduct=0;
-    emps.forEach(([uid,u])=>{
-      const p=calcPayroll(uid,selMon,selYear,pFrom,pTo);
-      totGross+=p.grossPay; totNet+=p.netPay; totDeduct+=p.totalDeductions;
-      rows+=`<tr><td>${esc(u.empID||uid)}</td><td>${esc(u.fullName)}</td>
-        <td>${p.present}P/${p.absent}A/${p.sl}SL/${p.vl}VL${p.unworkedRegHolDays?' / '+p.unworkedRegHolDays+'RH':''}</td>
-        <td style="text-align:right;">₱${p.grossPay.toLocaleString('en-PH',{minimumFractionDigits:2})}</td>
-        <td style="text-align:right;color:var(--red);">-₱${p.totalDeductions.toLocaleString('en-PH',{minimumFractionDigits:2})}</td>
-        <td style="text-align:right;font-weight:700;color:var(--green);">₱${p.netPay.toLocaleString('en-PH',{minimumFractionDigits:2})}</td>
-        <td><button class="btn btn-sm btn-ghost" onclick="showPayslip(${jsStr(uid)},${selMon},${selYear},${pFrom},${pTo})">Payslip</button></td></tr>`;
-    });
-    document.getElementById('page-payroll').innerHTML=`
-      <div class="card"><div class="card-header"><div class="card-title">Payroll Computation</div><button class="btn btn-success" onclick="exportPayrollExcel(${selMon},${selYear},${jsStr(perVal)})">⬇ Export</button></div>
-      <div class="toolbar">
-        <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="prYear" onchange="renderPayroll()">${yearOptions(selYear)}</select></div>
-        <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="prMon" onchange="renderPayroll()">${MN.map((m,i)=>`<option value="${i}"${i===selMon?' selected':''}>${m}</option>`).join('')}</select></div>
-        <div class="form-group"><label class="form-label">Period</label><select class="form-select" id="prPeriod" onchange="renderPayroll()"><option value="full"${perVal==='full'?' selected':''}>Full Month</option><option value="1-15"${perVal==='1-15'?' selected':''}>1 – 15</option><option value="16-31"${perVal==='16-31'?' selected':''}>16 – End</option></select></div>
-      </div>
-      <div class="stats-row" style="margin-bottom:16px;">
-        <div class="stat-card" style="border-left-color:var(--green);"><div class="stat-label">Total Gross</div><div class="stat-num" style="font-size:1.3rem;">₱${totGross.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
-        <div class="stat-card" style="border-left-color:var(--red);"><div class="stat-label">Total Deductions</div><div class="stat-num" style="font-size:1.3rem;">₱${totDeduct.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
-        <div class="stat-card" style="border-left-color:var(--primary);"><div class="stat-label">Total Net Pay</div><div class="stat-num" style="font-size:1.3rem;">₱${totNet.toLocaleString('en-PH',{minimumFractionDigits:2})}</div></div>
-      </div>
-      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Summary</th><th style="text-align:right;">Gross</th><th style="text-align:right;">Deductions</th><th style="text-align:right;">Net Pay</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);">No employees.</td></tr>'}</tbody></table></div></div>`;
-  }
-
-  function showPayslip(uid,mon,year,dateFrom,dateTo) {
-    const u=companyUsers[uid]||{};
-    const p=calcPayroll(uid,mon,year,dateFrom,dateTo);
-    const fmt=n=>`₱${n.toLocaleString('en-PH',{minimumFractionDigits:2})}`;
-    const periodLabel=`${MN[mon]} ${dateFrom}–${dateTo}, ${year}`;
-    const earningsHtml=p.earningsBreakdown.map(e=>`<div style="display:contents;"><span>${esc(e.label)}</span><span>${fmt(e.amount)}</span></div>`).join('');
-    const deductHtml=p.deductionsBreakdown.map(d=>`<div style="display:contents;"><span>${esc(d.label)}</span><span>-${fmt(d.amount)}</span></div>`).join('');
-    document.getElementById('payslipOverlay')?.remove();
-    const overlay=document.createElement('div');
-    overlay.id='payslipOverlay';
-    overlay.className='payslip-overlay';
-    overlay.innerHTML=`
-      <div class="payslip-box" id="payslipContent">
-        <div style="text-align:center;margin-bottom:20px;"><div style="font-size:1.3rem;font-weight:800;">PAYSLIP</div><div style="font-size:.85rem;color:var(--text-muted);">${esc(periodLabel)}</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:.85rem;margin-bottom:16px;background:#f9fafb;padding:12px;border-radius:8px;">
-          <div><b>Employee:</b></div><div>${esc(u.fullName||uid)}</div>
-          <div><b>ID:</b></div><div>${esc(u.empID||uid)}</div>
-          <div><b>Dept:</b></div><div>${esc(u.dept||'—')}</div>
-          <div><b>Monthly Rate:</b></div><div>${fmt(p.monthlySalary)}</div>
-        </div>
-        <div style="font-size:.85rem;">
-          <div style="font-weight:700;margin-bottom:6px;border-bottom:2px solid var(--border);padding-bottom:4px;">Earnings</div>
-          <div style="display:grid;grid-template-columns:1fr auto;gap:4px;margin-bottom:12px;">${earningsHtml}
-            <span style="font-weight:700;border-top:1px solid var(--border);padding-top:4px;">Gross Pay</span><span style="font-weight:700;border-top:1px solid var(--border);padding-top:4px;">${fmt(p.grossPay)}</span>
-          </div>
-          <div style="font-weight:700;margin-bottom:6px;border-bottom:2px solid var(--border);padding-bottom:4px;">Deductions</div>
-          <div style="display:grid;grid-template-columns:1fr auto;gap:4px;margin-bottom:12px;color:var(--red);">${deductHtml}
-            <span style="font-weight:700;border-top:1px solid var(--border);padding-top:4px;color:var(--text);">Total Deductions</span><span style="font-weight:700;border-top:1px solid var(--border);padding-top:4px;">-${fmt(p.totalDeductions)}</span>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr auto;background:var(--primary);color:#fff;border-radius:8px;padding:12px;font-weight:800;font-size:1rem;"><span>NET PAY</span><span>${fmt(p.netPay)}</span></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:16px;">
-          <button class="btn btn-primary" onclick="printPayslip()">🖨 Print</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('payslipOverlay').remove()">Close</button>
-        </div>
-      </div>`;
-    overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
-    document.body.appendChild(overlay);
-    window._payslipPrintContent = document.getElementById('payslipContent').innerHTML;
-  }
-
-  function printPayslip() {
-    const pa = document.getElementById('payslipPrintArea');
-    pa.innerHTML = window._payslipPrintContent || '';
-    pa.style.display = 'block';
-    window.print();
-    setTimeout(() => { pa.style.display='none'; pa.innerHTML=''; }, 1000);
-  }
-
-  function exportPayrollExcel(mon,year,period) {
-    const dim=new Date(year,mon+1,0).getDate();
-    let pFrom=1,pTo=dim;
-    if(period==='1-15'){pFrom=1;pTo=15;}
-    if(period==='16-31'){pFrom=16;pTo=dim;}
-    const emps=sortEmps();
-    const headers=['Emp ID','Name','Dept','Days Present','Absences','SL','VL','Lates (min)','Gross Pay','Total Deductions','Net Pay'];
-    const data=[headers];
-    emps.forEach(([uid,u])=>{
-      const p=calcPayroll(uid,mon,year,pFrom,pTo);
-      data.push([u.empID||uid,u.fullName,u.dept,p.present,p.absent,p.sl,p.vl,p.lateMin,p.grossPay.toFixed(2),p.totalDeductions.toFixed(2),p.netPay.toFixed(2)]);
-    });
-    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Payroll');
-    XLSX.writeFile(wb,`Payroll_${MN[mon]}_${period}_${year}.xlsx`);
-  }
-
-  // ==================== TIMESTAMPS ====================
-  function renderTimestamps() {
-    const now=new Date();
-    const savedMon=document.getElementById('tsMonth')?.value;
-    const savedYear=document.getElementById('tsYear')?.value;
-    const selMon=savedMon!==undefined&&savedMon!==''?parseInt(savedMon):now.getMonth();
-    const selYear=savedYear!==undefined&&savedYear!==''?parseInt(savedYear):now.getFullYear();
-    const empFilter=document.getElementById('tsEmpFilter')?.value||'';
-    const savedPeriod=document.getElementById('tsPeriod')?.value||'full';
-    const dim=new Date(selYear,selMon+1,0).getDate();
-    const DOW_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    let pS=1, pE=dim;
-    if(savedPeriod==='1-15'){pS=1;pE=Math.min(15,dim);}
-    else if(savedPeriod==='16-31'){pS=16;pE=dim;}
-
-    const holMap={};
-    Object.values(companyHolidays).forEach(h=>{
-      if(!h||!h.date)return;
-      const hd=new Date(h.date+'T00:00:00');
-      if(hd.getFullYear()===selYear&&hd.getMonth()===selMon) holMap[hd.getDate()]=h;
-    });
-
-    const fmtTime=iso=>{if(!iso)return'';try{return new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});}catch(e){return'';}};
-
-    // Build header
-    let html=`<table style="min-width:${280+(pE-pS+1)*72}px;border-collapse:collapse;">
-      <thead><tr>
-        <th style="min-width:90px;position:sticky;left:0;z-index:2;background:var(--bg);">EMP ID</th>
-        <th style="min-width:160px;">Name</th>
-        <th style="min-width:70px;">Dept</th>`;
-    for(let d=pS;d<=pE;d++){
-      const dow=new Date(selYear,selMon,d).getDay();
-      const isWeekend=dow===0||dow===6;
-      const isToday=(selYear===now.getFullYear()&&selMon===now.getMonth()&&d===now.getDate());
-      const hol=holMap[d];
-      const thBg=hol?(hol.type==='regular'?'background:#fffbeb;':'background:#faf5ff;'):(isWeekend?'background:#f8f9fb;':'');
-      const todayStyle=isToday?'outline:2px solid var(--primary);outline-offset:-2px;':'';
-      html+=`<th style="text-align:center;min-width:72px;padding:5px 2px;${thBg}${todayStyle}">
-        <div style="font-size:11px;font-weight:700;line-height:1.2;">${d}</div>
-        <div style="font-size:9px;font-weight:500;color:${isWeekend?'#f59e0b':'var(--text-muted)'};">${DOW_SHORT[dow]}</div>
-        ${hol?`<div class="holiday-badge${hol.type==='special'?' special':''}" style="max-width:68px;">${esc(hol.name.slice(0,8))}</div>`:''}
-      </th>`;
-    }
-    html+=`</tr></thead><tbody>`;
-
-    const empsToShow=sortEmps().filter(([uid])=>!empFilter||uid===empFilter);
-    if(!empsToShow.length){
-      html+=`<tr><td colspan="${4+(pE-pS+1)}" style="text-align:center;color:var(--text-muted);padding:32px;">No records.</td></tr>`;
-    } else {
-      empsToShow.forEach(([uid,u])=>{
-        const att=companyAttendance[uid]||{};
-        html+=`<tr>
-          <td style="font-size:12px;font-weight:700;padding:6px 14px;position:sticky;left:0;background:var(--card);z-index:1;">${esc(u.empID||uid)}</td>
-          <td style="padding:6px 14px;font-weight:600;font-size:13px;">${esc(u.fullName)}</td>
-          <td style="padding:6px 14px;font-size:12px;color:var(--text-muted);">${esc(u.dept||'')}</td>`;
-        for(let d=pS;d<=pE;d++){
-          const k=`${selMon}_${d}`,st=att[k]||'';
-          const timeIn=fmtTime(att[k+'_time']);
-          const timeOut=fmtTime(att[k+'_out']);
-          const late=att[k+'_late']?parseInt(att[k+'_late']):0;
-          const dow=new Date(selYear,selMon,d).getDay();
-          const isWeekend=dow===0||dow===6;
-          const isToday=(selYear===now.getFullYear()&&selMon===now.getMonth()&&d===now.getDate());
-          const hol=holMap[d];
-          const holBorder=hol?`border-left:2px solid ${hol.type==='regular'?'#f59e0b':'#a78bfa'};`:'';
-          const todayOutline=isToday?'outline:2px solid var(--primary);outline-offset:-2px;':'';
-
-          if(!st){
-            html+=`<td style="padding:4px 2px;text-align:center;min-width:72px;${holBorder}${todayOutline}${!st&&isWeekend?'background:#f8f9fb;':''}">
-              <div style="font-size:10px;color:#d1d5db;">—</div>
-            </td>`;
-          } else {
-            html+=`<td class="s-${st}" style="padding:4px 3px;text-align:center;vertical-align:top;min-width:72px;border-radius:4px;${holBorder}${todayOutline}">
-              <div style="font-size:10px;font-weight:700;line-height:1.4;">${esc(st)}${late?`<span class="late-tag">${late}m</span>`:''}</div>
-              ${timeIn?`<div style="font-size:9px;font-weight:600;color:var(--text-muted);line-height:1.3;">▶ ${timeIn}</div>`:''}
-              ${timeOut?`<div style="font-size:9px;font-weight:500;color:var(--text-muted);line-height:1.3;">■ ${timeOut}</div>`:''}
-            </td>`;
+        await companyRef.set({
+          settings: { companyName, createdAt: firebase.database.ServerValue.TIMESTAMP },
+          users: {
+            [uid]: { fullName: 'Admin', email, role: 'Admin', dept: 'RC', empID: uid, companyId }
           }
-        }
-        html+=`</tr>`;
-      });
-    }
-    html+=`</tbody></table>`;
+        });
 
-    document.getElementById('page-timestamps').innerHTML=`
-      <div class="card">
-        <div class="card-header"><div class="card-title">📋 Timestamp Sheet (DTR)</div><button class="btn btn-success" onclick="exportDTRExcel(${selMon},${selYear},${jsStr(savedPeriod)},${jsStr(empFilter)})">⬇ Export Excel</button></div>
-        <div class="toolbar">
-          <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="tsMonth" onchange="renderTimestamps()">${MN.map((m,i)=>`<option value="${i}"${i===selMon?' selected':''}>${m}</option>`).join('')}</select></div>
-          <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="tsYear" onchange="renderTimestamps()">${yearOptions(selYear)}</select></div>
-          <div class="form-group"><label class="form-label">Period</label><select class="form-select" id="tsPeriod" onchange="renderTimestamps()"><option value="full"${savedPeriod==='full'?' selected':''}>Full Month</option><option value="1-15"${savedPeriod==='1-15'?' selected':''}>1 – 15</option><option value="16-31"${savedPeriod==='16-31'?' selected':''}>16 – End</option></select></div>
-          <div class="form-group"><label class="form-label">Employee</label><select class="form-select" id="tsEmpFilter" onchange="renderTimestamps()"><option value="">All Employees</option>${sortEmps().map(([uid,u])=>`<option value="${esc(uid)}"${uid===empFilter?' selected':''}>${esc(u.fullName)}</option>`).join('')}</select></div>
-        </div>
-        <div class="table-wrap" style="overflow-x:auto;">${html}</div>
-      </div>`;
-  }
+        await userCred.user.sendEmailVerification();
+        pendingVerification = true;
+        isSigningUp = false;
+        closeModal();
+        showVerifyBanner(email);
 
-  function exportDTRExcel(mon,year,period,empFilter) {
-    // Resolve period bounds (mirrors renderTimestamps logic)
-    const dim=new Date(year,mon+1,0).getDate();
-    let pS=1, pE=dim;
-    if(period==='1-15'){pS=1;pE=Math.min(15,dim);}
-    else if(period==='16-31'){pS=16;pE=dim;}
-
-    // Resolve employee list (mirrors renderTimestamps filter)
-    const empsToExport=sortEmps().filter(([uid])=>!empFilter||uid===empFilter);
-
-    const data=[['Emp ID','Name','Date','Status','Time In','Time Out','Lates (min)','IP']];
-    const fmtTime=iso=>{try{return iso?new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}):''}catch(e){return'';}};
-    empsToExport.forEach(([uid,u])=>{
-      const att=companyAttendance[uid]||{};
-      for(let d=pS;d<=pE;d++){
-        const k=`${mon}_${d}`,st=att[k]||'';
-        const dateStr=new Date(year,mon,d).toLocaleDateString('en-PH',{month:'short',day:'numeric',weekday:'short'});
-        data.push([u.empID||uid,u.fullName,dateStr,st,fmtTime(att[k+'_time']),fmtTime(att[k+'_out']),parseInt(att[k+'_late']||0),att[k+'_ip']||'']);
-      }
-    });
-    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'DTR');
-    // Reflect period and employee in filename
-    const empSuffix=empFilter?(companyUsers[empFilter]?.empID||'emp'):'all';
-    const periodLabel=period==='full'?'Full':(period==='1-15'?'1-15':`16-${pE}`);
-    XLSX.writeFile(wb,`DTR_${MN[mon]}_${periodLabel}_${empSuffix}_${year}.xlsx`);
-  }
-
-  // ==================== HOLIDAYS ====================
-  function renderHolidays() {
-    const hols=Object.entries(companyHolidays).sort((a,b)=>new Date(a[1].date||0)-new Date(b[1].date||0));
-    let rows='';
-    if(!hols.length) rows='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px;">No holidays added.</td></tr>';
-    else hols.forEach(([hid,h])=>{ rows+=`<tr><td>${esc(h.date)}</td><td>${esc(h.name)}</td><td><span style="background:${h.type==='regular'?'#fef3c7':'#ede9fe'};color:${h.type==='regular'?'#92400e':'#4c1d95'};padding:2px 8px;border-radius:20px;font-size:11px;">${esc(h.type)}</span></td><td><button class="btn btn-danger btn-sm" onclick="deleteHoliday(${jsStr(hid)})">Delete</button></td></tr>`; });
-    document.getElementById('page-holidays').innerHTML=`
-      <div class="card"><div class="card-header"><div class="card-title">Holiday Manager</div><button class="btn btn-primary" onclick="document.getElementById('holForm').classList.toggle('hidden')">+ Add</button></div>
-      <div class="card hidden" id="holForm" style="background:#f9fafb;border:1px solid var(--border);">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;">
-          <div class="form-group"><label>Date</label><input type="date" class="form-input" id="hfDate"></div>
-          <div class="form-group"><label>Name</label><input type="text" class="form-input" id="hfName"></div>
-          <div class="form-group"><label>Type</label><select class="form-select" id="hfType"><option value="regular">Regular</option><option value="special">Special</option></select></div>
-          <button class="btn btn-primary" onclick="saveHoliday()" style="height:42px;align-self:flex-end;">Save</button>
-        </div>
-      </div>
-      <div class="table-wrap"><table><thead><tr><th>Date</th><th>Name</th><th>Type</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
-  }
-  async function saveHoliday() {
-    if(!canDo('manageHolidays')){toast('Access denied.','error');return;}
-    const date=document.getElementById('hfDate').value,name=document.getElementById('hfName').value.trim(),type=document.getElementById('hfType').value;
-    if(!date||!name) return toast('Date and name required','error');
-    await db.ref(`${getCompanyPath()}/holidays`).push({date,name,type});
-    document.getElementById('hfDate').value='';document.getElementById('hfName').value='';
-    toast('Holiday added!','success');
-  }
-  async function deleteHoliday(hid) {
-    if(!canDo('manageHolidays')){toast('Access denied.','error');return;}
-    if(!confirm('Delete?')) return;
-    await db.ref(`${getCompanyPath()}/holidays/${hid}`).remove();
-    toast('Deleted.','success');
-  }
-
-  // ==================== AUDIT ====================
-  function renderAudit() {
-    if(!canDo('viewAuditLogs')){ document.getElementById('page-audit').innerHTML='<div class="card"><p style="text-align:center;padding:40px;color:var(--text-muted);">No permission.</p></div>'; return; }
-    document.getElementById('page-audit').innerHTML='<div class="card"><div style="text-align:center;padding:32px;color:var(--text-muted);">Loading…</div></div>';
-    db.ref(`${getCompanyPath()}/audit_logs`).orderByChild('timestamp').limitToLast(200).once('value',snap=>{
-      const logs=snap.val()||{};
-      const entries=Object.entries(logs).sort((a,b)=>new Date(b[1].timestamp||0)-new Date(a[1].timestamp||0));
-      let rows='';
-      if(!entries.length) rows='<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:32px;">No logs.</td></tr>';
-      else entries.forEach(([,log])=>{ const ts=log.timestamp?new Date(log.timestamp).toLocaleString('en-PH'):'—'; rows+=`<tr><td style="white-space:nowrap;font-size:12px;">${esc(ts)}</td><td style="font-size:12px;font-weight:600;">${esc(log.name||log.email||'—')}</td><td style="font-size:12px;">${esc(log.action||'—')}</td></tr>`; });
-      document.getElementById('page-audit').innerHTML=`<div class="card"><div class="card-header"><div class="card-title">Audit Logs</div><span style="font-size:12px;color:var(--text-muted);">Last 200</span></div><div class="table-wrap"><table><thead><tr><th>Timestamp</th><th>User</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
-    });
-  }
-
-  // ==================== SCHEDULE ====================
-  function renderSchedule() {
-    const now=new Date();
-    const savedMon=document.getElementById('schMonth')?.value;
-    const mon=savedMon!==undefined&&savedMon!==''?parseInt(savedMon):now.getMonth();
-    const year=now.getFullYear();
-    const emps=sortEmps();
-    const allShifts=new Set();
-    emps.forEach(([,u])=>{ if(u.defaultShift)allShifts.add(u.defaultShift); for(let m=0;m<12;m++){if(u['shift_'+m])allShifts.add(u['shift_'+m]);} });
-    let rows='';
-    emps.forEach(([uid,u])=>{
-      const sch=companySchedules[uid]||{};
-      const schMon=sch['m'+mon]||sch['default']||{};
-      const shift=u['shift_'+mon]||u.defaultShift||'';
-      const off1=u['off1_'+mon]||u.defaultOff1||'';
-      const off2=u['off2_'+mon]||u.defaultOff2||'';
-      const timeIn=schMon.timeIn||sch.defaultTimeIn||'08:00';
-      const timeOut=schMon.timeOut||sch.defaultTimeOut||'17:00';
-      const breakMin=schMon.breakMin!==undefined?schMon.breakMin:(sch.defaultBreakMin!==undefined?sch.defaultBreakMin:60);
-      // Compute effective hours
-      const [inH,inM]=timeIn.split(':').map(Number);
-      const [outH,outM]=timeOut.split(':').map(Number);
-      const totalMin=(outH*60+outM)-(inH*60+inM)-Number(breakMin);
-      const adjTotalMin=totalMin<0?totalMin+24*60:totalMin;
-      const effHours=(adjTotalMin/60).toFixed(1);
-      rows+=`<tr>
-        <td>${esc(u.empID||uid)}</td>
-        <td><b>${esc(u.fullName)}</b></td>
-        <td><input class="form-input" style="width:140px;" value="${esc(shift)}" onchange="updateScheduleField(${jsStr(uid)},${mon},'shift',this.value)" placeholder="e.g. Morning"></td>
-        <td>
-          <div style="display:flex;gap:6px;align-items:center;">
-            <input type="time" class="form-input" style="width:110px;" value="${esc(timeIn)}" onchange="updateScheduleTime(${jsStr(uid)},${mon},'timeIn',this.value)">
-            <span style="color:var(--text-muted);font-size:11px;">–</span>
-            <input type="time" class="form-input" style="width:110px;" value="${esc(timeOut)}" onchange="updateScheduleTime(${jsStr(uid)},${mon},'timeOut',this.value)">
-          </div>
-        </td>
-        <td>
-          <select class="form-select" style="width:90px;" onchange="updateScheduleTime(${jsStr(uid)},${mon},'breakMin',this.value)">
-            <option value="0" ${Number(breakMin)===0?'selected':''}>None</option>
-            <option value="30" ${Number(breakMin)===30?'selected':''}>30 min</option>
-            <option value="60" ${Number(breakMin)===60?'selected':''}>1 hr</option>
-            <option value="90" ${Number(breakMin)===90?'selected':''}>1.5 hr</option>
-          </select>
-        </td>
-        <td style="font-size:12px;font-weight:700;color:${totalMin>0?'var(--green)':'var(--red)'};">${totalMin>0?effHours+'h':'—'}</td>
-        <td><select class="form-select" style="width:120px;" onchange="updateScheduleField(${jsStr(uid)},${mon},'off1',this.value)"><option value="">— None —</option>${DOW.map(d=>`<option value="${d}"${off1===d?' selected':''}>${d}</option>`).join('')}</select></td>
-        <td><select class="form-select" style="width:120px;" onchange="updateScheduleField(${jsStr(uid)},${mon},'off2',this.value)"><option value="">— None —</option>${DOW.map(d=>`<option value="${d}"${off2===d?' selected':''}>${d}</option>`).join('')}</select></td>
-        <td><button class="btn btn-ghost btn-sm" onclick="copyShiftToAll(${jsStr(uid)},${mon})">📋 All Months</button></td>
-      </tr>`;
-    });
-    document.getElementById('page-schedule').innerHTML=`
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">📅 Schedule — ${MN[mon]} ${year}</div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-ghost" onclick="bulkApplyShift(${mon})">⚡ Bulk Apply</button>
-            <button class="btn btn-success" onclick="autoPostAllRestDays(${mon},${year})">🗓 Auto-Fill Rest Days</button>
-          </div>
-        </div>
-        <div class="toolbar">
-          <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="schMonth" onchange="renderSchedule()">${MN.map((m,i)=>`<option value="${i}"${i===mon?' selected':''}>${m} ${year}</option>`).join('')}</select></div>
-        </div>
-        <div style="background:#f0edff;border:1px solid #d4c9ff;border-radius:9px;padding:9px 14px;font-size:11px;color:var(--primary);margin-bottom:14px;display:flex;gap:8px;align-items:center;">
-          <i class="fa-solid fa-circle-info"></i>
-          <span>Work hours set here determine each employee's expected shift length. The <b>Attendance</b> page uses clock-in/out times to compute lates automatically.</span>
-        </div>
-        ${[...allShifts].length?`<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">💡 Shifts in use: <b>${esc([...allShifts].join(', '))}</b></div>`:''}
-        <div class="table-wrap" style="overflow-x:auto;">
-          <table style="min-width:900px;">
-            <thead><tr>
-              <th>ID</th><th>Name</th><th>Shift Name</th>
-              <th>Work Hours (In — Out)</th><th>Break</th><th>Eff. Hrs</th>
-              <th>Rest Day 1</th><th>Rest Day 2</th><th></th>
-            </tr></thead>
-            <tbody>${rows||'<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:32px;">No employees.</td></tr>'}</tbody>
-          </table>
-        </div>
-      </div>
-      <div class="card hidden" id="bulkShiftPanel">
-        <div class="card-header"><div class="card-title">⚡ Bulk Apply Shift</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:end;">
-          <div class="form-group"><label class="form-label">Shift Name</label><input class="form-input" id="bulkShiftVal" placeholder="e.g. Morning"></div>
-          <div class="form-group"><label class="form-label">Time In</label><input type="time" class="form-input" id="bulkTimeIn" value="08:00"></div>
-          <div class="form-group"><label class="form-label">Time Out</label><input type="time" class="form-input" id="bulkTimeOut" value="17:00"></div>
-          <div class="form-group"><label class="form-label">Scope</label><select class="form-select" id="bulkShiftScope"><option value="month">This month (${MN[mon]})</option><option value="all">All months</option></select></div>
-          <button class="btn btn-primary" onclick="doBulkShift(${mon})" style="align-self:flex-end;">Apply to All</button>
-        </div>
-      </div>`;
-  }
-
-  let _schTimeDebounce={};
-  function updateScheduleTime(uid,mon,field,value) {
-    const key=uid+mon+field; clearTimeout(_schTimeDebounce[key]);
-    _schTimeDebounce[key]=setTimeout(async()=>{
-      const monKey='m'+mon;
-      await db.ref(`${getCompanyPath()}/schedules/${uid}/${monKey}`).update({[field]:value});
-      // Default is only updated via 'Copy to All Months' button, not on every change
-    },600);
-  }
-  let _schDebounce={};
-  function updateScheduleField(uid,mon,field,value) {
-    const key=uid+mon+field; clearTimeout(_schDebounce[key]);
-    _schDebounce[key]=setTimeout(async()=>{ const dbField=field==='shift'?`shift_${mon}`:field==='off1'?`off1_${mon}`:`off2_${mon}`; await db.ref(`${getCompanyPath()}/users/${uid}`).update({[dbField]:value}); },600);
-  }
-  async function copyShiftToAll(uid,sourceMon) {
-    const u=companyUsers[uid]||{};
-    const sch=companySchedules[uid]||{};
-    const schMon=sch['m'+sourceMon]||sch['default']||{};
-    const shift=u['shift_'+sourceMon]||u.defaultShift||'',off1=u['off1_'+sourceMon]||u.defaultOff1||'',off2=u['off2_'+sourceMon]||u.defaultOff2||'';
-    const timeIn=schMon.timeIn||'08:00',timeOut=schMon.timeOut||'17:00',breakMin=schMon.breakMin??60;
-    const updates={defaultShift:shift,defaultOff1:off1,defaultOff2:off2};
-    for(let m=0;m<12;m++){updates['shift_'+m]=shift;updates['off1_'+m]=off1;updates['off2_'+m]=off2;}
-    await db.ref(`${getCompanyPath()}/users/${uid}`).update(updates);
-    // Also copy schedule times (timeIn/timeOut/breakMin) to all months
-    const schUpd={timeIn,timeOut,breakMin};
-    await db.ref(`${getCompanyPath()}/schedules/${uid}/default`).update(schUpd);
-    for(let m=0;m<12;m++) await db.ref(`${getCompanyPath()}/schedules/${uid}/m${m}`).update(schUpd);
-    const schUpdates={defaultTimeIn:timeIn,defaultTimeOut:timeOut,defaultBreakMin:breakMin,default:{timeIn,timeOut,breakMin}};
-    for(let m=0;m<12;m++) schUpdates['m'+m]={timeIn,timeOut,breakMin};
-    await db.ref(`${getCompanyPath()}/schedules/${uid}`).update(schUpdates);
-    toast('Shift & hours copied to all months!','success');
-  }
-  function bulkApplyShift(mon){document.getElementById('bulkShiftPanel')?.classList.toggle('hidden');}
-  async function doBulkShift(mon) {
-    const shift=document.getElementById('bulkShiftVal')?.value?.trim();
-    const scope=document.getElementById('bulkShiftScope')?.value;
-    const timeIn=document.getElementById('bulkTimeIn')?.value||'08:00';
-    const timeOut=document.getElementById('bulkTimeOut')?.value||'17:00';
-    if(!shift) return toast('Enter a shift name','error');
-    for(const[uid,u]of Object.entries(companyUsers)){
-      if(u.disabled) continue;
-      const userUpdates={};
-      if(scope==='all'){userUpdates.defaultShift=shift;for(let m=0;m<12;m++)userUpdates['shift_'+m]=shift;}
-      else userUpdates['shift_'+mon]=shift;
-      await db.ref(`${getCompanyPath()}/users/${uid}`).update(userUpdates);
-      // FIX #5: Preserve existing breakMin per employee; only override timeIn/timeOut
-      const existingSch=companySchedules[uid]||{};
-      const schUpdates={};
-      if(scope==='all'){
-        schUpdates.defaultTimeIn=timeIn;schUpdates.defaultTimeOut=timeOut;
-        for(let m=0;m<12;m++){
-          const existingBreak=existingSch['m'+m]?.breakMin??existingSch.default?.breakMin??existingSch.defaultBreakMin??60;
-          schUpdates['m'+m]={timeIn,timeOut,breakMin:existingBreak};
-        }
-        const defBreak=existingSch.default?.breakMin??existingSch.defaultBreakMin??60;
-        schUpdates.default={timeIn,timeOut,breakMin:defBreak};
       } else {
-        const existingBreak=existingSch['m'+mon]?.breakMin??existingSch.default?.breakMin??existingSch.defaultBreakMin??60;
-        schUpdates['m'+mon]={timeIn,timeOut,breakMin:existingBreak};
-      }
-      await db.ref(`${getCompanyPath()}/schedules/${uid}`).update(schUpdates);
-    }
-    document.getElementById('bulkShiftPanel')?.classList.add('hidden');
-    toast(`Shift "${shift}" (${timeIn}–${timeOut}) applied to all!`,'success');
-  }
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Logging in…'; }
+        const loginCred = await auth.signInWithEmailAndPassword(email, password);
 
-  // ==================== CUSTOM COLUMNS ====================
-  function renderCustomColumnsList(cols) {
-    if (!cols || !cols.length) return `<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:.875rem;border:2px dashed var(--border);border-radius:10px;">No custom columns yet. Add your first one above — meal allowance, birthday bonus, cash bond, etc.</div>`;
-    return cols.map((col,i) => {
-      const typeColor = col.type==='earning'?'#dcfce7':'#fee2e2';
-      const typeTextColor = col.type==='earning'?'#166534':'#991b1b';
-      const typeLabel = col.type==='earning'?'+ Earning':'− Deduction';
-      const calcLabel = {fixed:'Fixed',per_day_present:'Per day present',per_day_worked:'Per working day',pct_basic:'% of basic'}[col.calc]||col.calc;
-      return `<div class="toggle-feature-row" style="justify-content:space-between;">
-        <div class="dot ${col.type==='earning'?'dot-earn':'dot-deduct'}"></div>
-        <div class="tf-info">
-          <div class="tf-name">${esc(col.name)}</div>
-          <div class="tf-desc">${calcLabel} · ${col.calc==='pct_basic'?(col.amount+'%'):('₱'+col.amount)}</div>
-        </div>
-        <span style="background:${typeColor};color:${typeTextColor};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-right:8px;">${typeLabel}</span>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-ghost btn-sm" onclick="moveCustomCol(${i},-1)" ${i===0?'disabled':''}>↑</button>
-          <button class="btn btn-ghost btn-sm" onclick="moveCustomCol(${i},1)" ${i===cols.length-1?'disabled':''}>↓</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteCustomCol(${i})">🗑</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  function toggleCustomCalcFields() {
-    // Nothing to hide/show currently, but hook for future
-  }
-
-  async function addCustomColumn() {
-    if (!canDo('managePayrollSettings')) { toast('Access denied.','error'); return; }
-    const name = document.getElementById('ccName')?.value?.trim();
-    const type = document.getElementById('ccType')?.value;
-    const calc = document.getElementById('ccCalc')?.value;
-    const amount = parseFloat(document.getElementById('ccAmount')?.value);
-    if (!name) return toast('Column name required','error');
-    if (isNaN(amount) || amount < 0) return toast('Enter a valid amount','error');
-    const existing = [...(companySettings.customColumns||[])];
-    if (existing.find(c=>c.name.toLowerCase()===name.toLowerCase())) return toast('A column with that name already exists','error');
-    existing.push({ name, type, calc, amount, enabled: true });
-    await db.ref(`${getCompanyPath()}/settings`).update({ customColumns: existing });
-    document.getElementById('ccName').value='';
-    document.getElementById('ccAmount').value='';
-    toast(`Column "${name}" added!`,'success');
-  }
-
-  async function deleteCustomCol(idx) {
-    if (!canDo('managePayrollSettings')) { toast('Access denied.','error'); return; }
-    const cols = [...(companySettings.customColumns||[])];
-    const name = cols[idx]?.name;
-    if (!confirm(`Delete column "${name}"? This will remove it from all payroll calculations.`)) return;
-    cols.splice(idx,1);
-    await db.ref(`${getCompanyPath()}/settings`).update({ customColumns: cols });
-    toast(`Column "${name}" deleted.`,'success');
-  }
-
-  async function moveCustomCol(idx, dir) {
-    const cols = [...(companySettings.customColumns||[])];
-    const newIdx = idx+dir;
-    if (newIdx<0||newIdx>=cols.length) return;
-    [cols[idx],cols[newIdx]]=[cols[newIdx],cols[idx]];
-    await db.ref(`${getCompanyPath()}/settings`).update({ customColumns: cols });
-  }
-
-  // ==================== SETTINGS ====================
-  let _activeSettingsTab = 'company';
-
-  function renderSettings() {
-    const pr = getPRSettings();
-    const adminOnly = isAdmin();
-    const roleEntries = Object.entries(companyRoles);
-
-    const toggleRow = (featKey, dotClass, name, desc, amountText, alwaysOn=false) => `
-      <div class="toggle-feature-row">
-        <div class="dot ${dotClass}"></div>
-        <div class="tf-info">
-          <div class="tf-name">${name}</div>
-          <div class="tf-desc">${desc}</div>
-        </div>
-        <span class="tf-amount">${amountText}</span>
-        ${alwaysOn
-          ? `<span class="tf-always">Always on</span>`
-          : `<label class="toggle-switch"><input type="checkbox" id="${featKey}" ${pr[featKey]?'checked':''}><span class="toggle-slider"></span></label>`
+        if (!loginCred.user.emailVerified) {
+          await auth.signOut();
+          isSigningUp = false;
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Log In'; }
+          errorEl.innerHTML = `Please verify your email before logging in. <a href="#" onclick="resendVerificationFromLogin('${email}')">Resend verification</a>`;
+          errorEl.classList.remove('hidden');
+          return;
         }
-      </div>`;
+        isSigningUp = false;
+        window.location.href = 'app.html';
+      }
+    } catch (error) {
+      isSigningUp = false;
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = modalMode === 'login' ? 'Log In' : 'Create Account'; }
+      if (error.code === 'auth/email-already-in-use') showError('This email is already registered. Try logging in instead.');
+      else if (error.code === 'auth/invalid-email') showError('Please enter a valid email address.');
+      else if (error.code === 'auth/weak-password') showError('Password should be at least 6 characters.');
+      else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') showError('Invalid email or password.');
+      else showError(error.message);
+    }
+  }
 
-    let roleRows = '';
-    if (!roleEntries.length) roleRows = '<p style="color:var(--text-muted);font-size:.875rem;">No custom roles yet.</p>';
-    else roleRows = roleEntries.map(([roleName,roleData]) => {
-      const pages=roleData.pages||{}, powers=roleData.powers||{};
-      const pageChips=ALL_PAGES.map(p=>`<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:${pages[p.id]?'#dcfce7':'#f3f4f6'};color:${pages[p.id]?'#166534':'#9ca3af'};margin:2px;">${pages[p.id]?'✓':'✕'} ${p.label.replace(/^[^\w\s]+\s/,'')}</span>`).join('');
-      // FIX #11: Use jsStr for onclick role name
-      return `<div style="border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:10px;background:#fafafa;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          <span style="font-weight:700;">${esc(roleName)}</span>
-          <div style="display:flex;gap:6px;"><button class="btn btn-ghost btn-sm" onclick="editRole(${jsStr(roleName)})">✏️ Edit</button><button class="btn btn-danger btn-sm" onclick="deleteRole(${jsStr(roleName)})">🗑</button></div>
-        </div>
-        <div>${pageChips}</div>
-      </div>`;
-    }).join('');
+  function showError(msg) {
+    const errorEl = document.getElementById('modalError');
+    errorEl.textContent = msg;
+    errorEl.className = 'alert alert-error';
+    errorEl.classList.remove('hidden');
+  }
 
-    document.getElementById('page-settings').innerHTML = `
-      <div class="settings-tabs">
-        <div class="settings-tab ${_activeSettingsTab==='company'?'active':''}" onclick="switchSettingsTab('company')">🏢 Company</div>
-        <div class="settings-tab ${_activeSettingsTab==='schedule'?'active':''}" onclick="switchSettingsTab('schedule')">📅 Working Schedule</div>
-        <div class="settings-tab ${_activeSettingsTab==='earnings'?'active':''}" onclick="switchSettingsTab('earnings')">💰 Earnings</div>
-        <div class="settings-tab ${_activeSettingsTab==='deductions'?'active':''}" onclick="switchSettingsTab('deductions')">💸 Deductions</div>
-        <div class="settings-tab ${_activeSettingsTab==='custom'?'active':''}" onclick="switchSettingsTab('custom')">➕ Custom Columns</div>
-        <div class="settings-tab ${_activeSettingsTab==='gov'?'active':''}" onclick="switchSettingsTab('gov')">🏦 Gov Contributions</div>
-        <div class="settings-tab ${_activeSettingsTab==='preview'?'active':''}" onclick="switchSettingsTab('preview')">👁️ Live Preview</div>
-        ${adminOnly?`<div class="settings-tab ${_activeSettingsTab==='roles'?'active':''}" onclick="switchSettingsTab('roles')">🔐 Roles</div>`:''}
-      </div>
-
-      <!-- COMPANY TAB -->
-      <div class="settings-panel ${_activeSettingsTab==='company'?'active':''}" id="stab-company">
-        <div class="settings-section">
-          <div class="settings-section-title">🏢 Company Information</div>
-          <div class="settings-section-note">Basic details about your company that appear throughout the app.</div>
-          <div class="settings-grid-2">
-            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="compNameInput" placeholder="e.g. Cuckoo Inc."></div>
-            <div class="form-group"><label class="form-label">Departments <span style="font-weight:400;color:var(--text-muted)">(separate with commas)</span></label><input class="form-input" id="compDeptInput" value="${esc(companySettings.departments||'RC,CSR')}" placeholder="e.g. RC, CSR, Finance"></div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-section-title">📋 Plan & Limits</div>
-          <div class="settings-section-note">Your current subscription plan determines how many employees you can add.</div>
-          <div class="settings-grid-2">
-            <div class="form-group">
-              <label class="form-label">Current Plan</label>
-              <select class="form-select" id="compPlanInput" style="max-width:280px;">
-                <option value="starter" ${(companySettings.plan||'starter')==='starter'?'selected':''}>Starter — up to 20 employees</option>
-                <option value="pro" ${companySettings.plan==='pro'?'selected':''}>Pro — up to 50 employees</option>
-                <option value="enterprise" ${companySettings.plan==='enterprise'?'selected':''}>Enterprise — unlimited employees</option>
-              </select>
-              <span style="font-size:11px;color:var(--text-muted);margin-top:4px;">Currently using ${getActiveEmpCount()} of ${getPlanLimit()===Infinity?'unlimited':getPlanLimit()} slots</span>
-            </div>
-          </div>
-        </div>
-        <div class="settings-section">
-          <div class="settings-section-title">🏖️ Annual Leave Allowances</div>
-          <div class="settings-section-note">How many paid leave days does each employee get per year?</div>
-          <div class="settings-grid-3" style="max-width:480px;">
-            <div class="form-group">
-              <label class="form-label">Sick Leave (SL) days</label>
-              <input type="number" min="0" max="60" class="form-input" id="compAnnualSL" value="${companySettings.annual_sl??5}">
-              <span style="font-size:11px;color:var(--text-muted);">Days per year</span>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Vacation Leave (VL) days</label>
-              <input type="number" min="0" max="60" class="form-input" id="compAnnualVL" value="${companySettings.annual_vl??5}">
-              <span style="font-size:11px;color:var(--text-muted);">Days per year</span>
-            </div>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="updateCompanySettings()"><i class="fa-solid fa-floppy-disk"></i> Save Company Settings</button>
-      </div>
-
-      <!-- SCHEDULE TAB -->
-      <div class="settings-panel ${_activeSettingsTab==='schedule'?'active':''}" id="stab-schedule">
-        <div class="settings-section">
-          <div class="settings-section-title">📅 Working Days & Hours</div>
-          <div class="settings-section-note">These numbers are used to figure out how much each employee earns per day and per hour.</div>
-          <div class="settings-grid-3" style="max-width:600px;">
-            <div class="form-group">
-              <label class="form-label">Working days per month</label>
-              <select class="form-select" id="pr_workingDays">
-                <option value="26" ${pr.workingDays==26?'selected':''}>26 days — standard PH</option>
-                <option value="22" ${pr.workingDays==22?'selected':''}>22 days — Mon to Fri only</option>
-                <option value="24" ${pr.workingDays==24?'selected':''}>24 days</option>
-                <option value="30" ${pr.workingDays==30?'selected':''}>30 days — daily rate basis</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Hours per shift</label>
-              <select class="form-select" id="pr_hoursPerDay">
-                <option value="8" ${pr.hoursPerDay==8?'selected':''}>8 hours</option>
-                <option value="9" ${pr.hoursPerDay==9?'selected':''}>9 hours</option>
-                <option value="10" ${pr.hoursPerDay==10?'selected':''}>10 hours</option>
-                <option value="12" ${pr.hoursPerDay==12?'selected':''}>12 hours</option>
-              </select>
-            </div>
-          </div>
-          <div class="settings-tip"><i class="fa-solid fa-circle-info"></i> Daily rate = Monthly salary ÷ working days per month. Hourly rate = Daily rate ÷ hours per shift.</div>
-        </div>
-
-        <div class="settings-section">
-          <div class="settings-section-title">⏰ Handling Late Arrivals</div>
-          <div class="settings-section-note">Choose how to calculate pay deductions when an employee arrives late.</div>
-          <div class="settings-grid-2" style="max-width:540px;">
-            <div class="form-group">
-              <label class="form-label">How to deduct lates</label>
-              <select class="form-select" id="pr_lateMode">
-                <option value="minute" ${pr.lateMode==='minute'?'selected':''}>Per minute — exact (most common)</option>
-                <option value="hour" ${pr.lateMode==='hour'?'selected':''}>Per whole hour — round down</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Grace period</label>
-              <select class="form-select" id="pr_gracePeriod">
-                <option value="0" ${pr.gracePeriod==0?'selected':''}>No grace period</option>
-                <option value="5" ${pr.gracePeriod==5?'selected':''}>5 minutes forgiven</option>
-                <option value="10" ${pr.gracePeriod==10?'selected':''}>10 minutes forgiven</option>
-                <option value="15" ${pr.gracePeriod==15?'selected':''}>15 minutes forgiven</option>
-                <option value="30" ${pr.gracePeriod==30?'selected':''}>30 minutes forgiven</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-section">
-          <div class="settings-section-title">🌙 Night Shift (Night Differential)</div>
-          <div class="settings-section-note">Employees who work during nighttime hours get extra pay. By law (DOLE), this is +10% of their hourly rate for hours worked between 10PM and 6AM.</div>
-          <div class="settings-grid-3" style="max-width:600px;">
-            <div class="form-group">
-              <label class="form-label">Night hours start</label>
-              <select class="form-select" id="pr_ndStart">
-                ${[18,19,20,21,22,23].map(h=>`<option value="${h}" ${pr.ndStart==h?'selected':''}>${h}:00 (${h>12?h-12:h}${h>=12?'PM':'AM'})</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Night hours end</label>
-              <select class="form-select" id="pr_ndEnd">
-                ${[1,2,3,4,5,6,7,8].map(h=>`<option value="${h}" ${pr.ndEnd==h?'selected':''}>${h}:00 (${h}AM)</option>`).join('')}
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Extra pay rate</label>
-              <select class="form-select" id="pr_ndRate">
-                <option value="0.10" ${pr.ndRate==0.10?'selected':''}>+10% (DOLE standard)</option>
-                <option value="0.20" ${pr.ndRate==0.20?'selected':''}>+20%</option>
-                <option value="0.30" ${pr.ndRate==0.30?'selected':''}>+30%</option>
-                <option value="0.00" ${pr.ndRate==0?'selected':''}>No night differential</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="savePayrollSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Schedule Settings</button>
-      </div>
-
-      <!-- EARNINGS TAB -->
-      <div class="settings-panel ${_activeSettingsTab==='earnings'?'active':''}" id="stab-earnings">
-        <div class="settings-section">
-          <div class="settings-section-title">💰 What Gets Added to Pay</div>
-          <div class="settings-section-note">Turn on or off each type of pay. Toggle off anything that doesn't apply to your company.</div>
-
-          ${toggleRow('', 'dot-earn', 'Basic Pay', 'Salary for days the employee actually showed up and worked.', 'Days present × daily rate', true)}
-          ${toggleRow('feat_sl_pay', 'dot-earn', 'Sick Leave Pay', 'Employee still gets paid for approved sick leave days.', 'SL days × daily rate')}
-          ${toggleRow('feat_vl_pay', 'dot-earn', 'Vacation Leave Pay', 'Employee still gets paid for approved vacation leave days.', 'VL days × daily rate')}
-          ${toggleRow('feat_hol_reg', 'dot-earn', 'Regular Holiday Pay', 'Employees get paid even if they did not work on a regular holiday.', 'Holiday days × daily rate')}
-
-          <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
-          <div style="font-size:.8rem;font-weight:700;color:var(--text-muted);margin-bottom:8px;">HOLIDAY PREMIUM (EXTRA PAY FOR WORKING ON HOLIDAYS)</div>
-          ${toggleRow('feat_hol_premium', 'dot-earn', 'Holiday Premium Pay', 'Employees who work on holidays get extra pay — 200% on regular holidays, 130% on special holidays (DOLE standard).', '200% reg / 130% special')}
-
-          <div id="holRateSettings" style="${pr.feat_hol_premium?'':'display:none;'}">
-            <div class="settings-grid-2" style="max-width:500px;margin-top:12px;padding:14px;background:#f9fafb;border:1px solid var(--border);border-radius:8px;">
-              <div class="form-group">
-                <label class="form-label">Regular holiday rate</label>
-                <select class="form-select" id="pr_regHolRate">
-                  <option value="2.00" ${pr.regHolRate==2?'selected':''}>200% — DOLE standard</option>
-                  <option value="1.30" ${pr.regHolRate==1.3?'selected':''}>130%</option>
-                  <option value="1.00" ${pr.regHolRate==1?'selected':''}>100% — same as regular day</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Special holiday rate</label>
-                <select class="form-select" id="pr_specHolRate">
-                  <option value="1.30" ${pr.specHolRate==1.3?'selected':''}>130% — DOLE standard</option>
-                  <option value="1.00" ${pr.specHolRate==1?'selected':''}>100% — same as regular day</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
-          ${toggleRow('feat_nd_pay', 'dot-earn', 'Night Differential Pay', 'Extra pay for hours worked during nighttime (configured in the Working Schedule tab).', '+10% on night hours')}
-        </div>
-        <button class="btn btn-primary" onclick="savePayrollSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Earnings Settings</button>
-      </div>
-
-      <!-- DEDUCTIONS TAB -->
-      <div class="settings-panel ${_activeSettingsTab==='deductions'?'active':''}" id="stab-deductions">
-        <div class="settings-section">
-          <div class="settings-section-title">💸 What Gets Deducted from Pay</div>
-          <div class="settings-section-note">Turn on or off each type of deduction.</div>
-
-          ${toggleRow('feat_absent_ded', 'dot-deduct', 'Absence Deduction', 'Pay is reduced for each day the employee was absent without an approved leave.', 'Absent days × daily rate')}
-          ${toggleRow('feat_late_ded', 'dot-deduct', 'Late Deduction', 'Pay is reduced based on how many minutes or hours the employee was late.', 'Based on late mode setting')}
-          ${toggleRow('feat_npl_ded', 'dot-deduct', 'No-Pay Leave (NPL/NPSL)', 'Deduct pay for leave days marked as No Pay.', 'NPL days × daily rate')}
-          ${toggleRow('feat_ut_ded', 'dot-deduct', 'Undertime Deduction', 'Deduct pay when an employee leaves early (UT status). Counted as half a day.', 'UT days × daily rate × 0.5')}
-        </div>
-        <button class="btn btn-primary" onclick="savePayrollSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Deduction Settings</button>
-      </div>
-
-      <!-- CUSTOM COLUMNS TAB -->
-      <div class="settings-panel ${_activeSettingsTab==='custom'?'active':''}" id="stab-custom">
-        <div class="settings-section">
-          <div class="settings-section-title">➕ Custom Payroll Columns</div>
-          <div class="settings-section-note">Add any earnings or deductions your company needs — meal allowance, birthday bonus, transportation, cash bond, etc. Each column will appear in every employee's payslip and in the payroll table.</div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:16px;background:#f9fafb;border:1px solid var(--border);padding:14px;border-radius:10px;">
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">Column Name</label>
-              <input class="form-input" id="ccName" placeholder="e.g. Meal Allowance">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">Type</label>
-              <select class="form-select" id="ccType">
-                <option value="earning">Earning (+)</option>
-                <option value="deduction">Deduction (−)</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">Calculation</label>
-              <select class="form-select" id="ccCalc" onchange="toggleCustomCalcFields()">
-                <option value="fixed">Fixed amount per payroll</option>
-                <option value="per_day_present">Per day present</option>
-                <option value="per_day_worked">Per working day</option>
-                <option value="pct_basic">% of basic pay</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin:0;" id="ccAmountGroup">
-              <label class="form-label">Amount / Rate</label>
-              <input type="number" class="form-input" id="ccAmount" placeholder="e.g. 150" min="0" oninput="if(this.value<0)this.value=0;">
-            </div>
-            <button class="btn btn-primary" onclick="addCustomColumn()" style="height:42px;align-self:flex-end;white-space:nowrap;">+ Add Column</button>
-          </div>
-
-          <div id="customColumnsList">
-            ${renderCustomColumnsList(companySettings.customColumns||[])}
-          </div>
-
-          <div class="settings-tip" style="margin-top:12px;">
-            <i class="fa-solid fa-lightbulb"></i>
-            <div><b>Per-employee overrides:</b> After adding a column here, you can set a different amount for individual employees in the Employees page. Leave it blank to use the default amount from this settings page.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- GOV CONTRIBUTIONS TAB -->
-      <div class="settings-panel ${_activeSettingsTab==='gov'?'active':''}" id="stab-gov">
-        <div class="settings-section">
-          <div class="settings-section-title">🏦 Government Contributions</div>
-          <div class="settings-section-note">These are automatically deducted from the employee's pay each payroll.</div>
-
-          <div class="gov-block">
-            <div class="gov-block-title">SSS (Social Security System)</div>
-            ${toggleRow('feat_sss', 'dot-deduct', 'Include SSS Deduction', 'Deduct the employee\'s SSS contribution from their pay.', '')}
-            <div id="sssSettings" style="${pr.feat_sss?'':'display:none;'}padding:14px;background:#f9fafb;border:1px solid var(--border);border-radius:8px;margin-top:8px;">
-              <div class="settings-grid-3" style="max-width:640px;">
-                <div class="form-group">
-                  <label class="form-label">Calculation method</label>
-                  <select class="form-select" id="pr_sssMode" onchange="toggleGovFields()">
-                    <option value="auto" ${pr.sssMode==='auto'?'selected':''}>Automatic — based on salary</option>
-                    <option value="fixed" ${pr.sssMode==='fixed'?'selected':''}>Fixed amount per month</option>
-                  </select>
-                </div>
-                <div id="sss_auto_fields" style="${pr.sssMode==='fixed'?'display:none':''}">
-                  <div class="form-group">
-                    <label class="form-label">Employee share (% of salary)</label>
-                    <select class="form-select" id="pr_sssEmployeePct">
-                      <option value="4.5" ${(pr.sssEmployeePct*100).toFixed(1)==='4.5'?'selected':''}>4.5% — current rate</option>
-                      <option value="5.0" ${(pr.sssEmployeePct*100).toFixed(1)==='5.0'?'selected':''}>5.0%</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Maximum deduction cap (₱)</label>
-                    <input type="number" class="form-input" id="pr_sssCap" value="${pr.sssCap}">
-                    <span style="font-size:11px;color:var(--text-muted);">Default: ₱1,350</span>
-                  </div>
-                </div>
-                <div id="sss_fixed_fields" style="${pr.sssMode==='auto'?'display:none':''}">
-                  <div class="form-group">
-                    <label class="form-label">Fixed monthly amount (₱)</label>
-                    <input type="number" class="form-input" id="pr_sssFixed" value="${pr.sssFixed}" placeholder="e.g. 900">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr class="settings-divider">
-
-          <div class="gov-block">
-            <div class="gov-block-title">PhilHealth (Philippine Health Insurance)</div>
-            ${toggleRow('feat_philhealth', 'dot-deduct', 'Include PhilHealth Deduction', 'Deduct the employee\'s PhilHealth premium from their pay.', '')}
-            <div id="phSettings" style="${pr.feat_philhealth?'':'display:none;'}padding:14px;background:#f9fafb;border:1px solid var(--border);border-radius:8px;margin-top:8px;">
-              <div class="settings-grid-3" style="max-width:640px;">
-                <div class="form-group">
-                  <label class="form-label">Calculation method</label>
-                  <select class="form-select" id="pr_phMode" onchange="toggleGovFields()">
-                    <option value="auto" ${pr.phMode==='auto'?'selected':''}>Automatic — based on salary</option>
-                    <option value="fixed" ${pr.phMode==='fixed'?'selected':''}>Fixed amount per month</option>
-                  </select>
-                </div>
-                <div id="ph_auto_fields" style="${pr.phMode==='fixed'?'display:none':''}">
-                  <div class="form-group">
-                    <label class="form-label">Employee share (% of salary)</label>
-                    <select class="form-select" id="pr_phPct">
-                      <option value="2.5" ${(pr.phPct*100).toFixed(1)==='2.5'?'selected':''}>2.5% — current rate (half of 5%)</option>
-                      <option value="3.0" ${(pr.phPct*100).toFixed(1)==='3.0'?'selected':''}>3.0%</option>
-                    </select>
-                  </div>
-                </div>
-                <div id="ph_fixed_fields" style="${pr.phMode==='auto'?'display:none':''}">
-                  <div class="form-group">
-                    <label class="form-label">Fixed monthly amount (₱)</label>
-                    <input type="number" class="form-input" id="pr_phFixed" value="${pr.phFixed}" placeholder="e.g. 500">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <hr class="settings-divider">
-
-          <div class="gov-block">
-            <div class="gov-block-title">Pag-IBIG (HDMF)</div>
-            ${toggleRow('feat_pagibig', 'dot-deduct', 'Include Pag-IBIG Deduction', 'Deduct the employee\'s Pag-IBIG contribution from their pay.', '')}
-            <div id="pagibigSettings" style="${pr.feat_pagibig?'':'display:none;'}padding:14px;background:#f9fafb;border:1px solid var(--border);border-radius:8px;margin-top:8px;">
-              <div class="settings-grid-3" style="max-width:640px;">
-                <div class="form-group">
-                  <label class="form-label">Calculation method</label>
-                  <select class="form-select" id="pr_pagibigMode" onchange="toggleGovFields()">
-                    <option value="auto" ${pr.pagibigMode==='auto'?'selected':''}>Automatic — based on salary</option>
-                    <option value="fixed" ${pr.pagibigMode==='fixed'?'selected':''}>Fixed amount per month</option>
-                  </select>
-                </div>
-                <div id="pagibig_auto_fields" style="${pr.pagibigMode==='fixed'?'display:none':''}">
-                  <div class="form-group">
-                    <label class="form-label">Employee share (% of salary)</label>
-                    <select class="form-select" id="pr_pagibigPct">
-                      <option value="2" ${(pr.pagibigPct*100).toFixed(0)==='2'?'selected':''}>2% — standard rate</option>
-                      <option value="3" ${(pr.pagibigPct*100).toFixed(0)==='3'?'selected':''}>3%</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Maximum deduction cap (₱)</label>
-                    <input type="number" class="form-input" id="pr_pagibigCap" value="${pr.pagibigCap}">
-                    <span style="font-size:11px;color:var(--text-muted);">Default: ₱200</span>
-                  </div>
-                </div>
-                <div id="pagibig_fixed_fields" style="${pr.pagibigMode==='auto'?'display:none':''}">
-                  <div class="form-group">
-                    <label class="form-label">Fixed monthly amount (₱)</label>
-                    <input type="number" class="form-input" id="pr_pagibigFixed" value="${pr.pagibigFixed}" placeholder="e.g. 200">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="savePayrollSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Gov Contribution Settings</button>
-      </div>
-
-      <!-- LIVE PREVIEW TAB -->
-      <!-- FIX #9: Preview now reads live form values via getPreviewPRSettings() so unsaved changes are reflected -->
-      <div class="settings-panel ${_activeSettingsTab==='preview'?'active':''}" id="stab-preview">
-        <div class="settings-section">
-          <div class="settings-section-title">👁️ Live Payslip Preview</div>
-          <div class="settings-section-note">Enter a sample scenario below to see exactly how payroll will be calculated with your current settings. This preview reflects any unsaved toggle changes you've made in other tabs.</div>
-          <div class="settings-grid-3" style="max-width:680px;margin-bottom:0;">
-            <div class="form-group">
-              <label class="form-label">Monthly salary (₱)</label>
-              <input type="number" class="form-input" id="prevSalary" value="20000" oninput="updateSettingsPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Days present</label>
-              <input type="number" class="form-input" id="prevPresent" value="22" min="0" max="31" oninput="updateSettingsPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Days absent</label>
-              <input type="number" class="form-input" id="prevAbsent" value="1" min="0" max="31" oninput="updateSettingsPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">SL days taken</label>
-              <input type="number" class="form-input" id="prevSL" value="1" min="0" oninput="updateSettingsPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Late (minutes total)</label>
-              <input type="number" class="form-input" id="prevLate" value="30" min="0" oninput="updateSettingsPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Night diff hours</label>
-              <input type="number" class="form-input" id="prevND" value="0" min="0" oninput="updateSettingsPreview()">
-            </div>
-          </div>
-          <div id="settingsPreviewBox"></div>
-        </div>
-      </div>
-
-      <!-- ROLES TAB (admin only) -->
-      ${adminOnly ? `
-      <div class="settings-panel ${_activeSettingsTab==='roles'?'active':''}" id="stab-roles">
-        <div class="settings-section">
-          <div class="card-header"><div class="card-title">🔐 Role & Permission Manager</div><button class="btn btn-primary btn-sm" onclick="showRoleForm()">+ New Role</button></div>
-          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:16px;">Roles let you control which pages and actions different staff members can access.</p>
-          <div id="roleList">${roleRows}</div>
-          <div class="card hidden" id="roleForm" style="background:#f0f4ff;border:1px solid #c7d2fe;margin-top:16px;padding:20px;border-radius:12px;">
-            <div class="card-header"><div class="card-title" id="roleFormTitle">New Role</div><button class="btn btn-ghost btn-sm" onclick="cancelRoleForm()">✕</button></div>
-            <div class="form-group"><label class="form-label">Role Name *</label><input class="form-input" id="rfRoleName" style="max-width:320px;"></div>
-            <div style="margin-bottom:16px;">
-              <div style="font-weight:600;font-size:.85rem;color:var(--text-muted);margin-bottom:10px;">PAGE ACCESS — which pages can this role see?</div>
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;" id="rfPageToggles">
-                ${ALL_PAGES.filter(p=>p.id!=='settings').map(p=>`<label style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;"><input type="checkbox" id="rfPage_${p.id}" value="${p.id}" style="width:16px;height:16px;accent-color:var(--primary);"><span style="font-size:.875rem;">${p.label}</span></label>`).join('')}
-              </div>
-            </div>
-            <div style="margin-bottom:16px;">
-              <div style="font-weight:600;font-size:.85rem;color:var(--text-muted);margin-bottom:8px;">ACTION POWERS — what can this role do?</div>
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
-                ${ALL_POWERS.map(pw=>`<label style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:#fff;"><input type="checkbox" id="rfPower_${pw.id}" value="${pw.id}" style="width:16px;height:16px;accent-color:#f59e0b;margin-top:2px;"><div><div style="font-size:.875rem;font-weight:600;">${pw.label}</div><div style="font-size:11px;color:var(--text-muted);">${pw.desc}</div></div></label>`).join('')}
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;"><button class="btn btn-primary" onclick="saveRole()">💾 Save Role</button><button class="btn btn-ghost" onclick="cancelRoleForm()">Cancel</button></div>
-          </div>
-        </div>
-      </div>` : ''}
+  function showVerifyBanner(email) {
+    const banner = document.getElementById('verifyBanner');
+    banner.innerHTML = `
+      ✅ Account created! We sent a verification email to <b>${email}</b>.
+      Please click the link to access your dashboard.
+      <button onclick="resendVerification()" style="margin-left:12px;background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Resend</button>
+      <button onclick="this.parentElement.style.display='none'" style="margin-left:8px;background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">✕</button>
     `;
+    banner.classList.add('show');
+  }
 
-    db.ref(`${getCompanyPath()}/settings`).once('value', snap => {
-      const s = snap.val() || {};
-      const el = document.getElementById('compNameInput');
-      if (el && document.activeElement !== el) el.value = s.companyName || '';
-    });
+  async function resendVerification() {
+    const user = auth.currentUser;
+    if (!user) { document.getElementById('verifyBanner').innerHTML = `You've been signed out. Please log in to receive a new verification email.`; return; }
+    try {
+      await user.sendEmailVerification();
+      document.getElementById('verifyBanner').innerHTML = `✅ Verification email resent to <b>${user.email}</b>. Check your inbox.`;
+    } catch (err) { showError(err.message); }
+  }
 
-    document.getElementById('feat_hol_premium')?.addEventListener('change', e => {
-      document.getElementById('holRateSettings').style.display = e.target.checked ? '' : 'none';
-    });
-    document.getElementById('feat_sss')?.addEventListener('change', e => {
-      document.getElementById('sssSettings').style.display = e.target.checked ? '' : 'none';
-    });
-    document.getElementById('feat_philhealth')?.addEventListener('change', e => {
-      document.getElementById('phSettings').style.display = e.target.checked ? '' : 'none';
-    });
-    document.getElementById('feat_pagibig')?.addEventListener('change', e => {
-      document.getElementById('pagibigSettings').style.display = e.target.checked ? '' : 'none';
-    });
+  async function resendVerificationFromLogin(email) {
+    const password = prompt('Enter your password to receive a new verification email:');
+    if (!password) return;
+    try {
+      const cred = await auth.signInWithEmailAndPassword(email, password);
+      if (cred.user.emailVerified) {
+        await auth.signOut();
+        showError('Your email is already verified. Try logging in normally.');
+        return;
+      }
+      await cred.user.sendEmailVerification();
+      await auth.signOut();
+      showError('Verification email sent. Please check your inbox.');
+    } catch (err) { showError(err.message); }
+  }
 
-    if (_activeSettingsTab === 'preview') updateSettingsPreview();
-    if (_activeSettingsTab === 'custom') {
-      const listEl = document.getElementById('customColumnsList');
-      if (listEl) listEl.innerHTML = renderCustomColumnsList(companySettings.customColumns||[]);
+  async function sendPasswordReset() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email) { showError('Please enter your email address above, then click Forgot Password.'); return; }
+    try {
+      await auth.sendPasswordResetEmail(email);
+      const errorEl = document.getElementById('modalError');
+      errorEl.textContent = `Password reset email sent to ${email}. Check your inbox.`;
+      errorEl.className = 'alert alert-success';
+      errorEl.classList.remove('hidden');
+    } catch (err) {
+      if (err.code === 'auth/user-not-found') showError('No account found with that email.');
+      else if (err.code === 'auth/invalid-email') showError('Please enter a valid email address.');
+      else showError(err.message);
     }
   }
 
-  function switchSettingsTab(tab) {
-    _activeSettingsTab = tab;
-    renderSettings();
-    if (tab === 'preview') setTimeout(updateSettingsPreview, 100);
-  }
 
-  function toggleGovFields() {
-    const sssMode = document.getElementById('pr_sssMode')?.value;
-    const phMode = document.getElementById('pr_phMode')?.value;
-    const pgMode = document.getElementById('pr_pagibigMode')?.value;
-    if (sssMode) { document.getElementById('sss_auto_fields').style.display = sssMode==='auto'?'':'none'; document.getElementById('sss_fixed_fields').style.display = sssMode==='fixed'?'':'none'; }
-    if (phMode) { document.getElementById('ph_auto_fields').style.display = phMode==='auto'?'':'none'; document.getElementById('ph_fixed_fields').style.display = phMode==='fixed'?'':'none'; }
-    if (pgMode) { document.getElementById('pagibig_auto_fields').style.display = pgMode==='auto'?'':'none'; document.getElementById('pagibig_fixed_fields').style.display = pgMode==='fixed'?'':'none'; }
-  }
-
-  // FIX #9: Read from live form elements so preview reflects unsaved changes
-  function getPreviewPRSettings() {
-    const g = id => document.getElementById(id)?.value;
-    const gb = id => { const el = document.getElementById(id); return el ? el.checked : getPRSettings()[id]; };
-    const s = getPRSettings(); // fallback for missing fields
-    return {
-      workingDays:    parseFloat(g('pr_workingDays'))  || s.workingDays,
-      hoursPerDay:    parseFloat(g('pr_hoursPerDay'))  || s.hoursPerDay,
-      lateMode:       g('pr_lateMode')                 || s.lateMode,
-      ndRate:         parseFloat(g('pr_ndRate') ?? String(s.ndRate)),
-      ndStart:        parseInt(g('pr_ndStart'))         ?? s.ndStart,
-      ndEnd:          parseInt(g('pr_ndEnd'))           ?? s.ndEnd,
-      gracePeriod:    parseInt(g('pr_gracePeriod'))     || 0,
-      sssMode:        g('pr_sssMode')                  || s.sssMode,
-      sssEmployeePct: parseFloat(g('pr_sssEmployeePct') || (s.sssEmployeePct*100)) / 100,
-      sssCap:         parseFloat(g('pr_sssCap'))       || s.sssCap,
-      sssFixed:       parseFloat(g('pr_sssFixed'))     || 0,
-      phMode:         g('pr_phMode')                   || s.phMode,
-      phPct:          parseFloat(g('pr_phPct') || (s.phPct*100)) / 100,
-      phFixed:        parseFloat(g('pr_phFixed'))      || 0,
-      pagibigMode:    g('pr_pagibigMode')              || s.pagibigMode,
-      pagibigPct:     parseFloat(g('pr_pagibigPct') || (s.pagibigPct*100)) / 100,
-      pagibigCap:     parseFloat(g('pr_pagibigCap'))   || s.pagibigCap,
-      pagibigFixed:   parseFloat(g('pr_pagibigFixed')) || 0,
-      feat_sl_pay:     gb('feat_sl_pay'),
-      feat_vl_pay:     gb('feat_vl_pay'),
-      feat_nd_pay:     gb('feat_nd_pay'),
-      feat_absent_ded: gb('feat_absent_ded'),
-      feat_late_ded:   gb('feat_late_ded'),
-      feat_sss:        gb('feat_sss'),
-      feat_philhealth: gb('feat_philhealth'),
-      feat_pagibig:    gb('feat_pagibig'),
-    };
-  }
-
-  function updateSettingsPreview() {
-    const box = document.getElementById('settingsPreviewBox');
-    if (!box) return;
-    const salary   = parseFloat(document.getElementById('prevSalary')?.value)  || 20000;
-    const present  = parseInt(document.getElementById('prevPresent')?.value)    || 22;
-    const absent   = parseInt(document.getElementById('prevAbsent')?.value)     || 0;
-    const sl       = parseInt(document.getElementById('prevSL')?.value)         || 0;
-    const lateMin  = parseInt(document.getElementById('prevLate')?.value)       || 0;
-    const ndH      = parseFloat(document.getElementById('prevND')?.value)       || 0;
-    // FIX #9: Use live form values instead of saved companySettings
-    const pr = getPreviewPRSettings();
-    const dailyRate  = salary / pr.workingDays;
-    const hourlyRate = dailyRate / pr.hoursPerDay;
-    const effectiveLateMin  = pr.gracePeriod > 0 ? Math.max(0, lateMin - pr.gracePeriod) : lateMin;
-    const effectiveLateHours = pr.lateMode === 'hour' ? Math.floor(effectiveLateMin / 60) : effectiveLateMin / 60;
-    const fmt = n => '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-    const earns = [];
-    let gross = 0;
-    const ae = (label, amt) => { if (amt > 0) { earns.push({ label, amt }); gross += amt; } };
-    ae('Basic Pay (' + present + ' days)', present * dailyRate);
-    if (pr.feat_sl_pay && sl > 0) ae('Sick Leave Pay (' + sl + ' days)', sl * dailyRate);
-    if (pr.feat_nd_pay && ndH > 0) ae('Night Differential (' + ndH + ' hrs)', ndH * hourlyRate * pr.ndRate);
-
-    const dedcts = [];
-    let totalDed = 0;
-    const ad = (label, amt) => { if (amt > 0) { dedcts.push({ label, amt }); totalDed += amt; } };
-    if (pr.feat_absent_ded && absent > 0) ad('Absence Deduction (' + absent + ' days)', absent * dailyRate);
-    if (pr.feat_late_ded && effectiveLateHours > 0) ad('Late Deduction (' + effectiveLateMin + ' min)', effectiveLateHours * hourlyRate);
-    if (pr.feat_sss) { const sss = pr.sssMode === 'fixed' ? pr.sssFixed : Math.min(pr.sssCap, salary * pr.sssEmployeePct); ad('SSS', sss); }
-    if (pr.feat_philhealth) { const ph = pr.phMode === 'fixed' ? pr.phFixed : salary * pr.phPct; ad('PhilHealth', ph); }
-    if (pr.feat_pagibig) { const pg = pr.pagibigMode === 'fixed' ? pr.pagibigFixed : Math.min(pr.pagibigCap, salary * pr.pagibigPct); ad('Pag-IBIG', pg); }
-
-    const net = gross - totalDed;
-
-    box.innerHTML = `
-      <div class="preview-payslip">
-        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:10px;">Sample Payslip Calculation</div>
-        <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">Daily rate: ${fmt(dailyRate)} &nbsp;|&nbsp; Hourly rate: ${fmt(hourlyRate)}</div>
-        <div class="preview-section-label">Earnings</div>
-        ${earns.map(e=>`<div class="preview-row earn-row"><span>+ ${esc(e.label)}</span><span>${fmt(e.amt)}</span></div>`).join('')}
-        <div class="preview-row" style="font-weight:600;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;"><span>Gross Pay</span><span>${fmt(gross)}</span></div>
-        <div class="preview-section-label" style="margin-top:10px;">Deductions</div>
-        ${dedcts.map(d=>`<div class="preview-row deduct-row"><span>− ${esc(d.label)}</span><span>${fmt(d.amt)}</span></div>`).join('')}
-        <div class="preview-row" style="font-weight:600;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;color:var(--red);"><span>Total Deductions</span><span>${fmt(totalDed)}</span></div>
-        <div class="preview-row total-row"><span>🟢 Net Pay</span><span>${fmt(net)}</span></div>
-      </div>`;
-  }
-
-  async function savePayrollSettings() {
-    if (!canDo('managePayrollSettings')) { toast('Access denied.', 'error'); return; }
-    const g = id => document.getElementById(id)?.value;
-    const gb = id => document.getElementById(id)?.checked ?? true;
-
-    const sssEmpPct  = parseFloat(g('pr_sssEmployeePct') || '4.5') / 100;
-    const phPct      = parseFloat(g('pr_phPct')          || '2.5') / 100;
-    const pagibigPct = parseFloat(g('pr_pagibigPct')     || '2')   / 100;
-
-    const updates = {
-      pr_workingDays:      parseFloat(g('pr_workingDays'))  || 26,
-      pr_hoursPerDay:      parseFloat(g('pr_hoursPerDay'))  || 8,
-      pr_lateMode:         g('pr_lateMode')                 || 'minute',
-      pr_regHolRate:       parseFloat(g('pr_regHolRate'))   || 2.0,
-      pr_specHolRate:      parseFloat(g('pr_specHolRate'))  || 1.3,
-      pr_ndStart:          parseInt(g('pr_ndStart'))        ?? 22,
-      pr_ndEnd:            parseInt(g('pr_ndEnd'))          ?? 6,
-      pr_ndRate:           parseFloat(g('pr_ndRate'))       || 0.10,
-      pr_sssMode:          g('pr_sssMode')                  || 'auto',
-      pr_sssEmployeePct:   sssEmpPct,
-      pr_sssCap:           parseFloat(g('pr_sssCap'))       || 1350,
-      pr_sssFixed:         parseFloat(g('pr_sssFixed'))     || 0,
-      pr_phMode:           g('pr_phMode')                   || 'auto',
-      pr_phPct:            phPct,
-      pr_phFixed:          parseFloat(g('pr_phFixed'))      || 0,
-      pr_pagibigMode:      g('pr_pagibigMode')              || 'auto',
-      pr_pagibigPct:       pagibigPct,
-      pr_pagibigCap:       parseFloat(g('pr_pagibigCap'))   || 200,
-      pr_pagibigFixed:     parseFloat(g('pr_pagibigFixed')) || 0,
-      pr_gracePeriod:      parseInt(g('pr_gracePeriod'))    || 0,
-      pr_payHolPresent:    true,
-      pr_feat_sl_pay:      gb('feat_sl_pay'),
-      pr_feat_vl_pay:      gb('feat_vl_pay'),
-      pr_feat_hol_reg:     gb('feat_hol_reg'),
-      pr_feat_hol_premium: gb('feat_hol_premium'),
-      pr_feat_nd_pay:      gb('feat_nd_pay'),
-      pr_feat_absent_ded:  gb('feat_absent_ded'),
-      pr_feat_late_ded:    gb('feat_late_ded'),
-      pr_feat_npl_ded:     gb('feat_npl_ded'),
-      pr_feat_ut_ded:      gb('feat_ut_ded'),
-      pr_feat_sss:         gb('feat_sss'),
-      pr_feat_philhealth:  gb('feat_philhealth'),
-      pr_feat_pagibig:     gb('feat_pagibig'),
-    };
-    await db.ref(`${getCompanyPath()}/settings`).update(updates);
-    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name: currentUser.email, action: 'SAVE PAYROLL SETTINGS', timestamp: new Date().toISOString() });
-    toast('Settings saved!', 'success');
-  }
-
-  async function updateCompanySettings() {
-    if (!canDo('manageCompanySettings')) { toast('Access denied.', 'error'); return; }
-    const name = document.getElementById('compNameInput')?.value?.trim();
-    const depts = document.getElementById('compDeptInput')?.value?.trim();
-    if (!name) return toast('Company name required', 'error');
-    const plan = document.getElementById('compPlanInput')?.value || 'starter';
-    const annual_sl = parseFloat(document.getElementById('compAnnualSL')?.value ?? 5);
-    const annual_vl = parseFloat(document.getElementById('compAnnualVL')?.value ?? 5);
-    const updates = { companyName: name, plan, annual_sl, annual_vl };
-    if (depts) updates.departments = depts;
-    await db.ref(`${getCompanyPath()}/settings`).update(updates);
-    document.querySelector('.sidebar-logo').innerHTML = '<div class="sidebar-logo-icon"><i class="fa-solid fa-crow"></i></div> ' + esc(name);
-    toast('Settings saved!', 'success');
-  }
-
-  // ===== ROLE MANAGEMENT =====
-  let editingRoleName = null;
-  function showRoleForm(prefillName) {
-    editingRoleName = prefillName || null;
-    document.getElementById('roleFormTitle').textContent = prefillName ? `Edit: ${prefillName}` : 'New Role';
-    document.getElementById('rfRoleName').value = prefillName || '';
-    document.getElementById('rfRoleName').disabled = !!prefillName;
-    ALL_PAGES.filter(p=>p.id!=='settings').forEach(p => {
-      const cb = document.getElementById('rfPage_'+p.id);
-      if (cb) cb.checked = prefillName ? (companyRoles[prefillName]?.pages?.[p.id]||false) : (p.id==='dashboard');
-    });
-    ALL_POWERS.forEach(pw => {
-      const cb = document.getElementById('rfPower_'+pw.id);
-      if (cb) cb.checked = prefillName ? (companyRoles[prefillName]?.powers?.[pw.id]||false) : false;
-    });
-    document.getElementById('roleForm').classList.remove('hidden');
-    document.getElementById('roleForm').scrollIntoView({ behavior: 'smooth' });
-  }
-  function editRole(roleName) { showRoleForm(roleName); }
-  function cancelRoleForm() { document.getElementById('roleForm')?.classList.add('hidden'); editingRoleName = null; }
-  async function saveRole() {
-    if (!canDo('manageRoles')) { toast('Access denied.', 'error'); return; }
-    const name = (document.getElementById('rfRoleName').value || '').trim();
-    if (!name) return toast('Role name required', 'error');
-    if (name.toLowerCase() === 'admin') return toast('"Admin" is reserved', 'error');
-    // FIX #5: Prevent silently overwriting an existing role when creating new one
-    if (!editingRoleName && companyRoles[name]) {
-      return toast(`Role "${name}" already exists. Edit it instead.`, 'error');
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      if (user.emailVerified && !isSigningUp) window.location.href = 'app.html';
+    } else {
+      pendingVerification = false;
     }
-    const pages = {}, powers = {};
-    ALL_PAGES.filter(p=>p.id!=='settings').forEach(p => { const cb = document.getElementById('rfPage_'+p.id); if(cb) pages[p.id]=cb.checked; });
-    ALL_POWERS.forEach(pw => { const cb = document.getElementById('rfPower_'+pw.id); if(cb) powers[pw.id]=cb.checked; });
-    await db.ref(`${getCompanyPath()}/roles/${name}`).set({ pages, powers });
-    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name: currentUser.email, action: `${editingRoleName?'EDIT':'CREATE'} ROLE: ${name}`, timestamp: new Date().toISOString() });
-    toast(`Role "${name}" saved!`, 'success'); cancelRoleForm();
-  }
-  async function deleteRole(roleName) {
-    if (!canDo('manageRoles')) { toast('Access denied.', 'error'); return; }
-    if (!confirm(`Delete role "${roleName}"?`)) return;
-    await db.ref(`${getCompanyPath()}/roles/${roleName}`).remove();
-    toast(`Role "${roleName}" deleted.`, 'success');
-  }
-
-  // ===== MOBILE SIDEBAR =====
-  function closeSidebar() { document.getElementById('sidebar')?.classList.remove('open'); document.getElementById('sidebarOverlay')?.classList.remove('open'); }
-  document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-    const open = document.getElementById('sidebar')?.classList.toggle('open');
-    document.getElementById('sidebarOverlay')?.classList.toggle('open', open);
   });
-  document.querySelectorAll('.sidebar-item').forEach(el => el.addEventListener('click', () => { if (window.innerWidth <= 768) closeSidebar(); }));
-
-  // ===== LOGOUT =====
-  document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 </script>
 </body>
 </html>
