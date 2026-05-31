@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Huetube Teams — Dashboard</title>
+  <title>Cuckoo — Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -13,11 +13,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<body>
 <div id="appLoadingOverlay">
-  <div class="sidebar-logo-icon" style="width:44px;height:44px;border-radius:12px;font-size:1.2rem;"><i class="fa-solid fa-people-group"></i></div>
+  <div class="sidebar-logo-icon" style="width:44px;height:44px;border-radius:12px;font-size:1.2rem;"><i class="fa-solid fa-crow"></i></div>
   <div class="big-spinner"></div>
-  <p style="font-size:.875rem;color:#6e7591;font-weight:600;letter-spacing:-0.01em;">Loading Huetube Teams…</p>
+  <p style="font-size:.875rem;color:#6e7591;font-weight:600;letter-spacing:-0.01em;">Loading Cuckoo…</p>
 </div>
 <div id="payslipPrintArea" style="display:none;"></div>
 <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button>
@@ -25,8 +24,8 @@
 <div class="app-shell">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="sidebar-logo-icon"><i class="fa-solid fa-people-group"></i></div>
-      Huetube Teams
+      <div class="sidebar-logo-icon"><i class="fa-solid fa-crow"></i></div>
+      Cuckoo
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section-label">Main</div>
@@ -197,7 +196,7 @@
   function loadCompanySettings() {
     db.ref(`${getCompanyPath()}/settings`).once('value', snap => {
       const s = snap.val() || {};
-      if (s.companyName) document.querySelector('.sidebar-logo').innerHTML = '📋 ' + esc(s.companyName);
+      if (s.companyName) document.querySelector('.sidebar-logo').innerHTML = '<div class="sidebar-logo-icon"><i class="fa-solid fa-crow"></i></div> ' + esc(s.companyName);
     });
   }
 
@@ -521,7 +520,7 @@
             <div class="form-group" id="efPassGroup"><label class="form-label">Password * (min 6 chars)</label><input type="password" class="form-input" id="efPass" minlength="6"></div>
             <div class="form-group"><label class="form-label">Department</label><select class="form-select" id="efDept">${deptOptions.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('')}</select></div>
             <div class="form-group"><label class="form-label">Role</label><select class="form-select" id="efRole">${roleNames.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('')}</select></div>
-            <div class="form-group"><label class="form-label">Monthly Salary (₱)</label><input type="number" class="form-input" id="efSalary" value="0" min="0"></div>
+            <div class="form-group"><label class="form-label">Monthly Salary (₱)</label><input type="number" class="form-input" id="efSalary" value="0" min="0" oninput="if(this.value<0)this.value=0;"></div>
             <div class="form-group"><label class="form-label">Employee ID (auto if blank)</label><input class="form-input" id="efEmpID" placeholder="e.g. EMP004"></div>
           </div>
           <div style="margin-top:12px;display:flex;gap:8px;">
@@ -556,12 +555,30 @@
     const csv = 'fullName,email,dept,role,monthlySalary,empID\nJuan dela Cruz,juan@example.com,RC,Employee,20000,EMP001';
     const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'employees_template.csv'; a.click();
   }
+  function parseCSVLine(line) {
+    // Properly handles quoted fields that may contain commas or escaped quotes
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; } // escaped quote
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ) {
+        cols.push(cur.trim()); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    cols.push(cur.trim());
+    return cols;
+  }
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/);
     if (lines.length < 2) return { headers: [], rows: [] };
-    const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+    const headers = parseCSVLine(lines[0]);
     const rows = lines.slice(1).map(line => {
-      const cols = line.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+      const cols = parseCSVLine(line);
       const obj = {}; headers.forEach((h, i) => { obj[h] = cols[i] || ''; }); return obj;
     });
     return { headers, rows };
@@ -633,12 +650,21 @@
     const email = document.getElementById('efEmail').value.trim();
     const dept = document.getElementById('efDept').value;
     const role = document.getElementById('efRole').value;
-    const salary = parseFloat(document.getElementById('efSalary').value)||0;
+    const salary = Math.max(0, parseFloat(document.getElementById('efSalary').value)||0);
     const customEmpID = document.getElementById('efEmpID').value.trim();
     const alertEl = document.getElementById('empFormAlert');
     if(alertEl){ alertEl.classList.add('hidden'); alertEl.textContent=''; }
     if (!name||!email) return showEmpError('Name and email required.');
     if (editingEmpId) {
+      // FIX #2: Check for duplicate email when editing (exclude the current employee)
+      const emailLower = email.toLowerCase();
+      const emailConflict = Object.entries(companyUsers).find(([uid, u]) => uid !== editingEmpId && (u.email||'').toLowerCase() === emailLower && !u.disabled);
+      if (emailConflict) return showEmpError(`Email "${esc(email)}" is already used by another employee.`);
+      // FIX #4: Check for duplicate empID when editing (exclude the current employee)
+      if (customEmpID) {
+        const idConflict = Object.entries(companyUsers).find(([uid, u]) => uid !== editingEmpId && (u.empID||'') === customEmpID && !u.disabled);
+        if (idConflict) return showEmpError(`Employee ID "${esc(customEmpID)}" is already in use.`);
+      }
       saveBtn.disabled=true; saveBtn.textContent='Saving...';
       try {
         await db.ref(`${getCompanyPath()}/users/${editingEmpId}`).update({ fullName:name,email,dept,role,monthlySalary:salary,...(customEmpID?{empID:customEmpID}:{}) });
@@ -652,10 +678,12 @@
       const emailLower = email.toLowerCase();
       if (Object.values(companyUsers).find(u => (u.email||'').toLowerCase()===emailLower)) return showEmpError(`Email "${esc(email)}" already exists.`);
       if (getActiveEmpCount() >= getPlanLimit()) return showEmpError(`Employee limit (${getPlanLimit()}) reached.`);
-      saveBtn.disabled=true; saveBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
+      // FIX #4: Validate duplicate empID on new employee
       const allEmps = Object.values(companyUsers);
       const maxNum = allEmps.reduce((max,u) => { const n=parseInt((u.empID||'').replace(/\D/g,''))||0; return n>max?n:max; },0);
       const newEmpID = customEmpID||('EMP'+String(maxNum+1).padStart(3,'0'));
+      if (customEmpID && allEmps.find(u => (u.empID||'') === customEmpID && !u.disabled)) return showEmpError(`Employee ID "${esc(customEmpID)}" is already in use.`);
+      saveBtn.disabled=true; saveBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
       try {
         let secondaryApp;
         // FIX #12: Separate try/catch for app initialization vs user creation for clearer error handling
@@ -702,7 +730,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
           <label style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;">Override Amount</label>
-          <input type="number" min="0" class="form-input" style="width:120px;" id="eccol_${esc(col.name.replace(/\s/g,'_'))}" value="${hasOverride?override:''}" placeholder="Use default">
+          <input type="number" min="0" class="form-input" style="width:120px;" id="eccol_${esc(col.name.replace(/\s/g,'_'))}" value="${hasOverride?override:''}" placeholder="Use default" oninput="if(this.value<0)this.value=0;">
         </div>
       </div>`;
     }).join('');
@@ -722,11 +750,19 @@
 
   async function saveEmpCustomCols(uid) {
     const cols = companySettings.customColumns||[];
-    const overrides = {};
+    // FIX #6: Start with existing overrides and selectively update/delete
+    // Blank input = remove the override (revert to company default)
+    const existingOverrides = (companyUsers[uid]||{}).customColOverrides || {};
+    const overrides = { ...existingOverrides };
     cols.forEach(col => {
       const inputId = 'eccol_'+col.name.replace(/\s/g,'_');
       const val = document.getElementById(inputId)?.value?.trim();
-      if (val !== '' && val !== undefined) overrides[col.name] = parseFloat(val);
+      if (val !== '' && val !== undefined && val !== null) {
+        overrides[col.name] = parseFloat(val);
+      } else {
+        // Blank = clear override, fall back to company default
+        delete overrides[col.name];
+      }
     });
     await db.ref(`${getCompanyPath()}/users/${uid}`).update({ customColOverrides: overrides });
     document.getElementById('empCustomColOverlay')?.remove();
@@ -748,48 +784,88 @@
     let pS=1, pE=dim;
     if (perVal==='1-15') pE=15; else if (perVal==='16-31') pS=16;
     const shiftFilter = savedShift.trim().toLowerCase();
+    const DOW_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const holMap = {};
     Object.values(companyHolidays).forEach(h => {
       if (!h||!h.date) return;
       const hd = new Date(h.date+'T00:00:00');
       if (hd.getFullYear()===year && hd.getMonth()===mon) holMap[hd.getDate()]=h;
     });
-    let html = `<table style="min-width:${600+(pE-pS+1)*46}px;"><thead><tr><th>Employee</th><th>Shift</th>`;
+
+    // Build header row with day number + day-of-week sub-label
+    let html = `<table style="min-width:${680+(pE-pS+1)*46}px;border-collapse:collapse;">
+      <thead><tr>
+        <th style="min-width:90px;position:sticky;left:0;z-index:2;background:var(--bg);">EMP ID</th>
+        <th style="min-width:160px;">Name</th>
+        <th style="min-width:70px;">Dept</th>
+        <th style="min-width:90px;">Shift</th>`;
     for (let d=pS; d<=pE; d++) {
-      const hol=holMap[d]; const bg=hol?(hol.type==='regular'?'background:#fffbeb;':'background:#faf5ff;'):'';
-      html+=`<th style="${bg}text-align:center;">${d}${hol?`<div class="holiday-badge${hol.type==='special'?' special':''}">${esc(hol.name.slice(0,5))}</div>`:''}</th>`;
+      const hol = holMap[d];
+      const dow = new Date(year,mon,d).getDay();
+      const isWeekend = dow===0||dow===6;
+      const isToday = (year===now.getFullYear()&&mon===now.getMonth()&&d===now.getDate());
+      const holBg = hol ? (hol.type==='regular'?'background:#fffbeb;':'background:#faf5ff;') : (isWeekend?'background:#f8f9fb;':'');
+      const todayStyle = isToday ? 'outline:2px solid var(--primary);outline-offset:-2px;' : '';
+      html += `<th style="text-align:center;min-width:46px;padding:6px 2px;${holBg}${todayStyle}">
+        <div style="font-size:11px;font-weight:700;line-height:1.2;">${d}</div>
+        <div style="font-size:9px;font-weight:500;color:${isWeekend?'#f59e0b':'var(--text-muted)'};">${DOW_SHORT[dow]}</div>
+        ${hol?`<div class="holiday-badge${hol.type==='special'?' special':''}" style="max-width:42px;">${esc(hol.name.slice(0,5))}</div>`:''}
+      </th>`;
     }
-    html += `<th>Lates</th></tr></thead><tbody>`;
+    html += `<th style="text-align:center;min-width:60px;color:#991b1b;">LATES<br><span style="font-size:9px;font-weight:500;">(MIN)</span></th></tr></thead><tbody>`;
+
     sortEmps().forEach(([uid,u]) => {
       const shift = u['shift_'+mon]||u.defaultShift||'';
       if (shiftFilter && !shift.toLowerCase().includes(shiftFilter)) return;
-      html += `<tr><td>${esc(u.fullName)}</td><td style="font-size:11px;color:var(--text-muted);">${esc(shift)}</td>`;
       const att = companyAttendance[uid]||{};
       let totalLate=0;
+
+      // Detect night shift for moon icon
+      const isNight = shift.toLowerCase().includes('night');
+
+      html += `<tr>
+        <td style="font-size:12px;font-weight:700;padding:8px 14px;position:sticky;left:0;background:var(--card);z-index:1;">${esc(u.empID||uid)}</td>
+        <td style="padding:8px 14px;font-weight:600;">${esc(u.fullName)}</td>
+        <td style="padding:8px 14px;font-size:12px;color:var(--text-muted);">${esc(u.dept||'')}</td>
+        <td style="padding:8px 14px;font-size:11px;color:var(--text-muted);">${esc(shift)}${isNight?' 🌙':''}</td>`;
+
       for (let d=pS; d<=pE; d++) {
-        const k=`${mon}_${d}`, st=att[k]||'', late=parseInt(att[k+'_late']||0); totalLate+=late;
-        const hol=holMap[d]; const holStyle=hol?`outline:2px solid ${hol.type==='regular'?'#f59e0b':'#a78bfa'};`:'';
-        // FIX #11: Use jsStr for safe onclick embedding
-        html += `<td class="att-cell s-${st}" style="${holStyle}" onclick="cycleAtt(${jsStr(uid)},${jsStr(k)})" title="${esc(st)}">${esc(st)}${late?`<span class="late-tag">${late}m</span>`:''}</td>`;
+        const k=`${mon}_${d}`, st=att[k]||'', late=parseInt(att[k+'_late']||0);
+        totalLate+=late;
+        const dow = new Date(year,mon,d).getDay();
+        const isWeekend = dow===0||dow===6;
+        const isToday = (year===now.getFullYear()&&mon===now.getMonth()&&d===now.getDate());
+        const hol = holMap[d];
+        const holOutline = hol ? `outline:2px solid ${hol.type==='regular'?'#f59e0b':'#a78bfa'};outline-offset:-1px;` : '';
+        const todayOutline = isToday ? 'outline:2px solid var(--primary);outline-offset:-2px;' : '';
+        // Empty cells on weekends show dim background
+        const weekendEmptyStyle = (!st && isWeekend) ? 'background:#f8f9fb;' : '';
+        const emptyCellStyle = !st ? weekendEmptyStyle : '';
+        html += `<td class="s-${st}" style="padding:4px 2px;text-align:center;cursor:pointer;min-width:46px;font-size:10px;font-weight:700;border-radius:6px;transition:transform .1s;${holOutline||todayOutline}${emptyCellStyle}" onclick="cycleAtt(${jsStr(uid)},${jsStr(k)})" title="${esc(st)||'(empty)'}">
+          ${st ? `<div style="font-size:10px;font-weight:700;line-height:1.3;">${esc(st)}</div>` : '<div style="font-size:10px;color:#d1d5db;">—</div>'}
+          ${late ? `<span class="late-tag">${late}m</span>` : ''}
+        </td>`;
       }
-      html += `<td class="lates-total">${totalLate||'—'}</td></tr>`;
+      html += `<td class="lates-total" style="padding:8px 6px;">${totalLate ? `<span style="color:#991b1b;font-weight:800;">${totalLate}</span>` : '—'}</td></tr>`;
     });
     html += `</tbody></table>`;
+
     document.getElementById('page-attendance').innerHTML = `
       <div class="card">
         <div class="card-header"><div class="card-title">Attendance Grid</div></div>
         <div class="toolbar">
-          <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="attYear" onchange="renderAttendance()">${yearOptions(year)}</select></div>
+          <div class="form-group"><label class="form-label">Shift</label><input type="text" class="form-input" id="attShiftFilter" placeholder="Filter shift…" value="${esc(savedShift)}" oninput="renderAttendance()" style="min-width:120px;"></div>
           <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="attMonth" onchange="renderAttendance()">${MN.map((m,i)=>`<option value="${i}"${i===mon?' selected':''}>${m}</option>`).join('')}</select></div>
+          <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="attYear" onchange="renderAttendance()">${yearOptions(year)}</select></div>
           <div class="form-group"><label class="form-label">Period</label><select class="form-select" id="attPeriod" onchange="renderAttendance()"><option value="1-15"${perVal==='1-15'?' selected':''}>1 – 15</option><option value="16-31"${perVal==='16-31'?' selected':''}>16 – End</option></select></div>
-          <div class="form-group"><label class="form-label">Shift</label><input type="text" class="form-input" id="attShiftFilter" placeholder="e.g. Morning" value="${esc(savedShift)}" oninput="renderAttendance()"></div>
-          <div class="form-group"><label class="form-label">Search</label><input type="text" class="form-input" id="attSearch" placeholder="Search..." oninput="searchAtt()"></div>
-          <button class="btn btn-success" onclick="exportAttExcel()">⬇ Export</button>
+          <div class="form-group"><label class="form-label">Search</label><input type="text" class="form-input" id="attSearch" placeholder="Search…" oninput="searchAtt()"></div>
+          <button class="btn btn-success" onclick="exportAttExcel()">⬇ Export Excel</button>
           <button class="btn btn-ghost" onclick="autoPostAllRestDays(parseInt(document.getElementById('attMonth').value),parseInt(document.getElementById('attYear').value))" title="Auto-fill Rest Days">🗓 Fill RDs</button>
         </div>
         <div id="holLegendBar" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 14px;font-size:11px;margin-bottom:12px;"></div>
-        <div class="table-wrap" id="attTableContainer">${html}</div>
+        <div class="table-wrap" id="attTableContainer" style="overflow-x:auto;">${html}</div>
       </div>`;
+
     const holDays = Object.keys(holMap).map(Number).filter(d=>d>=pS&&d<=pE);
     const lb = document.getElementById('holLegendBar');
     if (lb && holDays.length) {
@@ -869,9 +945,15 @@
     const ANNUAL_VL=parseFloat(companySettings.annual_vl??5);
     const thisYear=new Date().getFullYear();
     function getLeaveUsed(empUid,type) {
-      return Object.values(companyLeaves).filter(lv=>lv.empID===empUid&&lv.type===type&&lv.status==='Approved'&&lv.startDate?.startsWith(String(thisYear))).reduce((sum,lv)=>{
+      return Object.values(companyLeaves).filter(lv=>lv.empID===empUid&&lv.type===type&&lv.status==='Approved').reduce((sum,lv)=>{
+        // FIX #3: Count only days that actually fall within thisYear, not just leaves that start in thisYear
         const s=new Date(lv.startDate),e=new Date(lv.endDate);
-        const days=Math.round((e-s)/86400000)+1; return sum+(isNaN(days)?0:days);
+        const yearStart=new Date(thisYear,0,1), yearEnd=new Date(thisYear,11,31);
+        const effectiveStart=s<yearStart?yearStart:s;
+        const effectiveEnd=e>yearEnd?yearEnd:e;
+        if(effectiveStart>effectiveEnd) return sum;
+        const days=Math.round((effectiveEnd-effectiveStart)/86400000)+1;
+        return sum+(isNaN(days)?0:days);
       },0);
     }
     const balList=canManage?sortEmps().map(([uid,u])=>[uid,u]):[[currentUser.uid,companyUsers[currentUser.uid]||{}]];
@@ -1224,36 +1306,110 @@
     const selMon=savedMon!==undefined&&savedMon!==''?parseInt(savedMon):now.getMonth();
     const selYear=savedYear!==undefined&&savedYear!==''?parseInt(savedYear):now.getFullYear();
     const empFilter=document.getElementById('tsEmpFilter')?.value||'';
+    const savedPeriod=document.getElementById('tsPeriod')?.value||'full';
     const dim=new Date(selYear,selMon+1,0).getDate();
-    let rows='';
-    sortEmps().forEach(([uid,u])=>{
-      if(empFilter&&uid!==empFilter) return;
-      const att=companyAttendance[uid]||{};
-      const fmtTime=iso=>{if(!iso)return'—';try{return new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});}catch(e){return'—';}};
-      for(let d=1;d<=dim;d++){
-        const k=`${selMon}_${d}`,st=att[k]||'';
-        const dateStr=new Date(selYear,selMon,d).toLocaleDateString('en-PH',{month:'short',day:'numeric',weekday:'short'});
-        rows+=`<tr style="${!st?'color:var(--text-muted);font-style:italic;':''}"><td>${esc(u.empID||uid)}</td><td>${esc(u.fullName)}</td><td>${dateStr}</td><td>${st?`<span class="att-cell s-${st}">${esc(st)}</span>`:'<span style="color:#d1d5db;">—</span>'}</td><td>${fmtTime(att[k+'_time'])}</td><td>${fmtTime(att[k+'_out'])}</td><td>${att[k+'_late']?att[k+'_late']+'m':'—'}</td><td style="font-size:11px;color:var(--text-muted);">${esc(att[k+'_ip']||'—')}</td></tr>`;
-      }
+    const DOW_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let pS=1, pE=dim;
+    if(savedPeriod==='1-15'){pS=1;pE=Math.min(15,dim);}
+    else if(savedPeriod==='16-31'){pS=16;pE=dim;}
+
+    const holMap={};
+    Object.values(companyHolidays).forEach(h=>{
+      if(!h||!h.date)return;
+      const hd=new Date(h.date+'T00:00:00');
+      if(hd.getFullYear()===selYear&&hd.getMonth()===selMon) holMap[hd.getDate()]=h;
     });
-    if(!rows) rows='<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:32px;">No records.</td></tr>';
+
+    const fmtTime=iso=>{if(!iso)return'';try{return new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});}catch(e){return'';}};
+
+    // Build header
+    let html=`<table style="min-width:${280+(pE-pS+1)*72}px;border-collapse:collapse;">
+      <thead><tr>
+        <th style="min-width:90px;position:sticky;left:0;z-index:2;background:var(--bg);">EMP ID</th>
+        <th style="min-width:160px;">Name</th>
+        <th style="min-width:70px;">Dept</th>`;
+    for(let d=pS;d<=pE;d++){
+      const dow=new Date(selYear,selMon,d).getDay();
+      const isWeekend=dow===0||dow===6;
+      const isToday=(selYear===now.getFullYear()&&selMon===now.getMonth()&&d===now.getDate());
+      const hol=holMap[d];
+      const thBg=hol?(hol.type==='regular'?'background:#fffbeb;':'background:#faf5ff;'):(isWeekend?'background:#f8f9fb;':'');
+      const todayStyle=isToday?'outline:2px solid var(--primary);outline-offset:-2px;':'';
+      html+=`<th style="text-align:center;min-width:72px;padding:5px 2px;${thBg}${todayStyle}">
+        <div style="font-size:11px;font-weight:700;line-height:1.2;">${d}</div>
+        <div style="font-size:9px;font-weight:500;color:${isWeekend?'#f59e0b':'var(--text-muted)'};">${DOW_SHORT[dow]}</div>
+        ${hol?`<div class="holiday-badge${hol.type==='special'?' special':''}" style="max-width:68px;">${esc(hol.name.slice(0,8))}</div>`:''}
+      </th>`;
+    }
+    html+=`</tr></thead><tbody>`;
+
+    const empsToShow=sortEmps().filter(([uid])=>!empFilter||uid===empFilter);
+    if(!empsToShow.length){
+      html+=`<tr><td colspan="${4+(pE-pS+1)}" style="text-align:center;color:var(--text-muted);padding:32px;">No records.</td></tr>`;
+    } else {
+      empsToShow.forEach(([uid,u])=>{
+        const att=companyAttendance[uid]||{};
+        html+=`<tr>
+          <td style="font-size:12px;font-weight:700;padding:6px 14px;position:sticky;left:0;background:var(--card);z-index:1;">${esc(u.empID||uid)}</td>
+          <td style="padding:6px 14px;font-weight:600;font-size:13px;">${esc(u.fullName)}</td>
+          <td style="padding:6px 14px;font-size:12px;color:var(--text-muted);">${esc(u.dept||'')}</td>`;
+        for(let d=pS;d<=pE;d++){
+          const k=`${selMon}_${d}`,st=att[k]||'';
+          const timeIn=fmtTime(att[k+'_time']);
+          const timeOut=fmtTime(att[k+'_out']);
+          const late=att[k+'_late']?parseInt(att[k+'_late']):0;
+          const dow=new Date(selYear,selMon,d).getDay();
+          const isWeekend=dow===0||dow===6;
+          const isToday=(selYear===now.getFullYear()&&selMon===now.getMonth()&&d===now.getDate());
+          const hol=holMap[d];
+          const holBorder=hol?`border-left:2px solid ${hol.type==='regular'?'#f59e0b':'#a78bfa'};`:'';
+          const todayOutline=isToday?'outline:2px solid var(--primary);outline-offset:-2px;':'';
+
+          if(!st){
+            html+=`<td style="padding:4px 2px;text-align:center;min-width:72px;${holBorder}${todayOutline}${!st&&isWeekend?'background:#f8f9fb;':''}">
+              <div style="font-size:10px;color:#d1d5db;">—</div>
+            </td>`;
+          } else {
+            html+=`<td class="s-${st}" style="padding:4px 3px;text-align:center;vertical-align:top;min-width:72px;border-radius:4px;${holBorder}${todayOutline}">
+              <div style="font-size:10px;font-weight:700;line-height:1.4;">${esc(st)}${late?`<span class="late-tag">${late}m</span>`:''}</div>
+              ${timeIn?`<div style="font-size:9px;font-weight:600;color:var(--text-muted);line-height:1.3;">▶ ${timeIn}</div>`:''}
+              ${timeOut?`<div style="font-size:9px;font-weight:500;color:var(--text-muted);line-height:1.3;">■ ${timeOut}</div>`:''}
+            </td>`;
+          }
+        }
+        html+=`</tr>`;
+      });
+    }
+    html+=`</tbody></table>`;
+
     document.getElementById('page-timestamps').innerHTML=`
-      <div class="card"><div class="card-header"><div class="card-title">Timestamp Sheet (DTR)</div><button class="btn btn-success" onclick="exportDTRExcel(${selMon},${selYear})">⬇ Export</button></div>
-      <div class="toolbar">
-        <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="tsYear" onchange="renderTimestamps()">${yearOptions(selYear)}</select></div>
-        <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="tsMonth" onchange="renderTimestamps()">${MN.map((m,i)=>`<option value="${i}"${i===selMon?' selected':''}>${m}</option>`).join('')}</select></div>
-        <div class="form-group"><label class="form-label">Employee</label><select class="form-select" id="tsEmpFilter" onchange="renderTimestamps()"><option value="">All</option>${sortEmps().map(([uid,u])=>`<option value="${esc(uid)}"${uid===empFilter?' selected':''}>${esc(u.fullName)}</option>`).join('')}</select></div>
-      </div>
-      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Date</th><th>Status</th><th>In</th><th>Out</th><th>Late</th><th>IP</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+      <div class="card">
+        <div class="card-header"><div class="card-title">📋 Timestamp Sheet (DTR)</div><button class="btn btn-success" onclick="exportDTRExcel(${selMon},${selYear},${jsStr(savedPeriod)},${jsStr(empFilter)})">⬇ Export Excel</button></div>
+        <div class="toolbar">
+          <div class="form-group"><label class="form-label">Month</label><select class="form-select" id="tsMonth" onchange="renderTimestamps()">${MN.map((m,i)=>`<option value="${i}"${i===selMon?' selected':''}>${m}</option>`).join('')}</select></div>
+          <div class="form-group"><label class="form-label">Year</label><select class="form-select" id="tsYear" onchange="renderTimestamps()">${yearOptions(selYear)}</select></div>
+          <div class="form-group"><label class="form-label">Period</label><select class="form-select" id="tsPeriod" onchange="renderTimestamps()"><option value="full"${savedPeriod==='full'?' selected':''}>Full Month</option><option value="1-15"${savedPeriod==='1-15'?' selected':''}>1 – 15</option><option value="16-31"${savedPeriod==='16-31'?' selected':''}>16 – End</option></select></div>
+          <div class="form-group"><label class="form-label">Employee</label><select class="form-select" id="tsEmpFilter" onchange="renderTimestamps()"><option value="">All Employees</option>${sortEmps().map(([uid,u])=>`<option value="${esc(uid)}"${uid===empFilter?' selected':''}>${esc(u.fullName)}</option>`).join('')}</select></div>
+        </div>
+        <div class="table-wrap" style="overflow-x:auto;">${html}</div>
+      </div>`;
   }
 
-  function exportDTRExcel(mon,year) {
+  function exportDTRExcel(mon,year,period,empFilter) {
+    // Resolve period bounds (mirrors renderTimestamps logic)
     const dim=new Date(year,mon+1,0).getDate();
+    let pS=1, pE=dim;
+    if(period==='1-15'){pS=1;pE=Math.min(15,dim);}
+    else if(period==='16-31'){pS=16;pE=dim;}
+
+    // Resolve employee list (mirrors renderTimestamps filter)
+    const empsToExport=sortEmps().filter(([uid])=>!empFilter||uid===empFilter);
+
     const data=[['Emp ID','Name','Date','Status','Time In','Time Out','Lates (min)','IP']];
     const fmtTime=iso=>{try{return iso?new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}):''}catch(e){return'';}};
-    sortEmps().forEach(([uid,u])=>{
+    empsToExport.forEach(([uid,u])=>{
       const att=companyAttendance[uid]||{};
-      for(let d=1;d<=dim;d++){
+      for(let d=pS;d<=pE;d++){
         const k=`${mon}_${d}`,st=att[k]||'';
         const dateStr=new Date(year,mon,d).toLocaleDateString('en-PH',{month:'short',day:'numeric',weekday:'short'});
         data.push([u.empID||uid,u.fullName,dateStr,st,fmtTime(att[k+'_time']),fmtTime(att[k+'_out']),parseInt(att[k+'_late']||0),att[k+'_ip']||'']);
@@ -1261,7 +1417,10 @@
     });
     const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,ws,'DTR');
-    XLSX.writeFile(wb,`DTR_${MN[mon]}_${year}.xlsx`);
+    // Reflect period and employee in filename
+    const empSuffix=empFilter?(companyUsers[empFilter]?.empID||'emp'):'all';
+    const periodLabel=period==='full'?'Full':(period==='1-15'?'1-15':`16-${pE}`);
+    XLSX.writeFile(wb,`DTR_${MN[mon]}_${periodLabel}_${empSuffix}_${year}.xlsx`);
   }
 
   // ==================== HOLIDAYS ====================
@@ -1334,7 +1493,8 @@
       const [inH,inM]=timeIn.split(':').map(Number);
       const [outH,outM]=timeOut.split(':').map(Number);
       const totalMin=(outH*60+outM)-(inH*60+inM)-Number(breakMin);
-      const effHours=(totalMin/60).toFixed(1);
+      const adjTotalMin=totalMin<0?totalMin+24*60:totalMin;
+      const effHours=(adjTotalMin/60).toFixed(1);
       rows+=`<tr>
         <td>${esc(u.empID||uid)}</td>
         <td><b>${esc(u.fullName)}</b></td>
@@ -1406,8 +1566,7 @@
     _schTimeDebounce[key]=setTimeout(async()=>{
       const monKey='m'+mon;
       await db.ref(`${getCompanyPath()}/schedules/${uid}/${monKey}`).update({[field]:value});
-      // Also update default if it's a new value
-      await db.ref(`${getCompanyPath()}/schedules/${uid}/default`).update({[field]:value});
+      // Default is only updated via 'Copy to All Months' button, not on every change
     },600);
   }
   let _schDebounce={};
@@ -1424,6 +1583,10 @@
     const updates={defaultShift:shift,defaultOff1:off1,defaultOff2:off2};
     for(let m=0;m<12;m++){updates['shift_'+m]=shift;updates['off1_'+m]=off1;updates['off2_'+m]=off2;}
     await db.ref(`${getCompanyPath()}/users/${uid}`).update(updates);
+    // Also copy schedule times (timeIn/timeOut/breakMin) to all months
+    const schUpd={timeIn,timeOut,breakMin};
+    await db.ref(`${getCompanyPath()}/schedules/${uid}/default`).update(schUpd);
+    for(let m=0;m<12;m++) await db.ref(`${getCompanyPath()}/schedules/${uid}/m${m}`).update(schUpd);
     const schUpdates={defaultTimeIn:timeIn,defaultTimeOut:timeOut,defaultBreakMin:breakMin,default:{timeIn,timeOut,breakMin}};
     for(let m=0;m<12;m++) schUpdates['m'+m]={timeIn,timeOut,breakMin};
     await db.ref(`${getCompanyPath()}/schedules/${uid}`).update(schUpdates);
@@ -1442,9 +1605,21 @@
       if(scope==='all'){userUpdates.defaultShift=shift;for(let m=0;m<12;m++)userUpdates['shift_'+m]=shift;}
       else userUpdates['shift_'+mon]=shift;
       await db.ref(`${getCompanyPath()}/users/${uid}`).update(userUpdates);
-      const schUpdates={default:{timeIn,timeOut,breakMin:60}};
-      if(scope==='all'){schUpdates.defaultTimeIn=timeIn;schUpdates.defaultTimeOut=timeOut;for(let m=0;m<12;m++)schUpdates['m'+m]={timeIn,timeOut,breakMin:60};}
-      else schUpdates['m'+mon]={timeIn,timeOut,breakMin:60};
+      // FIX #5: Preserve existing breakMin per employee; only override timeIn/timeOut
+      const existingSch=companySchedules[uid]||{};
+      const schUpdates={};
+      if(scope==='all'){
+        schUpdates.defaultTimeIn=timeIn;schUpdates.defaultTimeOut=timeOut;
+        for(let m=0;m<12;m++){
+          const existingBreak=existingSch['m'+m]?.breakMin??existingSch.default?.breakMin??existingSch.defaultBreakMin??60;
+          schUpdates['m'+m]={timeIn,timeOut,breakMin:existingBreak};
+        }
+        const defBreak=existingSch.default?.breakMin??existingSch.defaultBreakMin??60;
+        schUpdates.default={timeIn,timeOut,breakMin:defBreak};
+      } else {
+        const existingBreak=existingSch['m'+mon]?.breakMin??existingSch.default?.breakMin??existingSch.defaultBreakMin??60;
+        schUpdates['m'+mon]={timeIn,timeOut,breakMin:existingBreak};
+      }
       await db.ref(`${getCompanyPath()}/schedules/${uid}`).update(schUpdates);
     }
     document.getElementById('bulkShiftPanel')?.classList.add('hidden');
@@ -1569,7 +1744,7 @@
           <div class="settings-section-title">🏢 Company Information</div>
           <div class="settings-section-note">Basic details about your company that appear throughout the app.</div>
           <div class="settings-grid-2">
-            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="compNameInput" placeholder="e.g. Huetube Inc."></div>
+            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="compNameInput" placeholder="e.g. Cuckoo Inc."></div>
             <div class="form-group"><label class="form-label">Departments <span style="font-weight:400;color:var(--text-muted)">(separate with commas)</span></label><input class="form-input" id="compDeptInput" value="${esc(companySettings.departments||'RC,CSR')}" placeholder="e.g. RC, CSR, Finance"></div>
           </div>
         </div>
@@ -1773,7 +1948,7 @@
             </div>
             <div class="form-group" style="margin:0;" id="ccAmountGroup">
               <label class="form-label">Amount / Rate</label>
-              <input type="number" class="form-input" id="ccAmount" placeholder="e.g. 150" min="0">
+              <input type="number" class="form-input" id="ccAmount" placeholder="e.g. 150" min="0" oninput="if(this.value<0)this.value=0;">
             </div>
             <button class="btn btn-primary" onclick="addCustomColumn()" style="height:42px;align-self:flex-end;white-space:nowrap;">+ Add Column</button>
           </div>
@@ -2017,7 +2192,7 @@
       workingDays:    parseFloat(g('pr_workingDays'))  || s.workingDays,
       hoursPerDay:    parseFloat(g('pr_hoursPerDay'))  || s.hoursPerDay,
       lateMode:       g('pr_lateMode')                 || s.lateMode,
-      ndRate:         parseFloat(g('pr_ndRate'))        ?? s.ndRate,
+      ndRate:         parseFloat(g('pr_ndRate') ?? String(s.ndRate)),
       ndStart:        parseInt(g('pr_ndStart'))         ?? s.ndStart,
       ndEnd:          parseInt(g('pr_ndEnd'))           ?? s.ndEnd,
       gracePeriod:    parseInt(g('pr_gracePeriod'))     || 0,
@@ -2152,7 +2327,7 @@
     const updates = { companyName: name, plan, annual_sl, annual_vl };
     if (depts) updates.departments = depts;
     await db.ref(`${getCompanyPath()}/settings`).update(updates);
-    document.querySelector('.sidebar-logo').innerHTML = '<div class="sidebar-logo-icon"><i class="fa-solid fa-people-group"></i></div> ' + esc(name);
+    document.querySelector('.sidebar-logo').innerHTML = '<div class="sidebar-logo-icon"><i class="fa-solid fa-crow"></i></div> ' + esc(name);
     toast('Settings saved!', 'success');
   }
 
