@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Huetube Teams — Smart Payroll & HR for Philippine Businesses</title>
+  <title>Cuckoo — Smart Payroll & HR for Philippine Businesses</title>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -20,8 +20,8 @@
 <div id="landingPage">
   <nav class="navbar">
     <a class="nav-logo" href="index.html">
-      <div class="nav-logo-icon"><i class="fa-solid fa-people-group"></i></div>
-      Huetube Teams
+      <div class="nav-logo-icon"><i class="fa-solid fa-crow"></i></div>
+      Cuckoo
     </a>
     <div class="nav-links">
       <a href="#features">Features</a>
@@ -142,7 +142,7 @@
             <li><i class="fa-solid fa-check"></i> API access</li>
             <li><i class="fa-solid fa-check"></i> Dedicated support</li>
           </ul>
-          <button class="btn btn-outline btn-lg">Contact Sales</button>
+          <button class="btn btn-outline btn-lg" onclick="window.location.href='mailto:sales@cuckoo.ph'">Contact Sales</button>
         </div>
       </div>
     </div>
@@ -159,7 +159,7 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div>© 2025 Huetube Teams. All rights reserved.</div>
+    <div>© 2025 Cuckoo. All rights reserved.</div>
     <div>
       <a href="terms.html" target="_blank">Terms of Service</a> ·
       <a href="privacy.html" target="_blank">Privacy Policy</a> ·
@@ -214,6 +214,7 @@
 
   let modalMode = 'signup';
   let pendingVerification = false;
+  let isSigningUp = false;
 
   function openModal(mode) {
     modalMode = mode;
@@ -302,7 +303,6 @@
         showVerifyBanner(email);
 
       } else {
-        isSigningUp = true;
         const submitBtn = document.getElementById('submitBtn');
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Logging in…'; }
         const loginCred = await auth.signInWithEmailAndPassword(email, password);
@@ -315,6 +315,7 @@
           errorEl.classList.remove('hidden');
           return;
         }
+        isSigningUp = false;
         window.location.href = 'app.html';
       }
     } catch (error) {
@@ -361,6 +362,11 @@
     if (!password) return;
     try {
       const cred = await auth.signInWithEmailAndPassword(email, password);
+      if (cred.user.emailVerified) {
+        await auth.signOut();
+        showError('Your email is already verified. Try logging in normally.');
+        return;
+      }
       await cred.user.sendEmailVerification();
       await auth.signOut();
       showError('Verification email sent. Please check your inbox.');
@@ -383,7 +389,6 @@
     }
   }
 
-  let isSigningUp = false;
 
   auth.onAuthStateChanged(user => {
     if (user) {
