@@ -82,29 +82,30 @@
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyAohgBioG5ZDyhu3t5PO1OGbZEupGNzIc8",
-    authDomain: "payrol-saas.firebaseapp.com",
-    databaseURL: "https://payrol-saas-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "payrol-saas",
-    storageBucket: "payrol-saas.firebasestorage.app",
-    messagingSenderId: "314676130295",
-    appId: "1:314676130295:web:bf6077ee69530f70ca3ef2"
-  };
+  apiKey: "AIzaSyCi5u_LzXU8R314I26t-aiwyLtFplgMdXQ",
+  authDomain: "cuckoo-3296c.firebaseapp.com",
+  databaseURL: "https://cuckoo-3296c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cuckoo-3296c",
+  storageBucket: "cuckoo-3296c.firebasestorage.app",
+  messagingSenderId: "921313677335",
+  appId: "1:921313677335:web:c3a074c841d4cefe690c52"
+};
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const auth = firebase.auth();
 
-  let companySettings = {};
-  let currentUser = null;
-  let currentCompanyId = null;
-  let companyUsers = {};
-  let companyAttendance = {};
-  let companyLeaves = {};
-  let companyHolidays = {};
-  let companyRoles = {};
-  let companySchedules = {};
-  let currentUserRole = null;
-  let currentPage = 'dashboard';
+  // --- GLOBALS (also on window so cuckoo-ai.js can read them) ---
+  let companySettings    = window.companySettings    = {};
+  let currentUser        = window.currentUser        = null;
+  let currentCompanyId   = window.currentCompanyId   = null;
+  let companyUsers       = window.companyUsers       = {};
+  let companyAttendance  = window.companyAttendance  = {};
+  let companyLeaves      = window.companyLeaves      = {};
+  let companyHolidays    = window.companyHolidays    = {};
+  let companyRoles       = window.companyRoles       = {};
+  let companySchedules   = window.companySchedules   = {};
+  let currentUserRole    = window.currentUserRole    = null;
+  let currentPage        = 'dashboard';
 
   const ALL_PAGES = [
     { id: 'dashboard',  label: '🏠 Dashboard' },
@@ -135,7 +136,9 @@
 
   function yearOptions(selYear) {
     const cur = new Date().getFullYear();
-    return [cur, cur-1, cur-2].map(y => `<option value="${y}"${y===selYear?' selected':''}>${y}</option>`).join('');
+    // Extended to 10 years back so historical payroll/attendance data is always accessible
+    const years = Array.from({ length: 10 }, (_, i) => cur - i);
+    return years.map(y => `<option value="${y}"${y===selYear?' selected':''}>${y}</option>`).join('');
   }
 
   const toast = (msg, type='info') => {
@@ -160,6 +163,7 @@
     if (_appInitialized) return;
     _appInitialized = true;
     currentUser = user;
+    window.currentUser = user;
     document.getElementById('userDisplayName').textContent = user.email;
     const _safetyTimer = setTimeout(() => dismissLoadingOverlay(), 10000);
     try { await user.getIdToken(true); } catch(e) {}
@@ -198,6 +202,7 @@
     }
     clearTimeout(_safetyTimer);
     currentCompanyId = userData.companyId;
+    window.currentCompanyId = currentCompanyId;
     loadCompanySettings();
     setupRealtimeListeners();
     startAutoClockOut();
@@ -218,7 +223,7 @@
     if (_attListenerOff) { _attListenerOff(); _attListenerOff = null; }
     _attListenerKey = key;
     const ref = db.ref(`${getCompanyPath()}/attendance`);
-    const cb = snap => { companyAttendance = snap.val() || {}; _scheduleRender(); };
+    const cb = snap => { companyAttendance = window.companyAttendance = snap.val() || {}; _scheduleRender(); };
     ref.on('value', cb);
     _attListenerOff = () => ref.off('value', cb);
   }
@@ -234,10 +239,10 @@
     const base = getCompanyPath();
     const now = new Date();
     db.ref(`${base}/users`).on('value', snap => {
-      companyUsers = snap.val() || {};
+      companyUsers = window.companyUsers = snap.val() || {};
       if (currentUser) {
         const me = companyUsers[currentUser.uid] || {};
-        currentUserRole = me.role || 'Employee';
+        currentUserRole = window.currentUserRole = me.role || 'Employee';
       }
       applyRolePermissions();
       dismissLoadingOverlay();
@@ -245,11 +250,11 @@
       else _scheduleRender();
     });
     _subscribeAttendance(now.getMonth(), now.getFullYear());
-    db.ref(`${base}/leave_requests`).on('value', snap => { companyLeaves = snap.val() || {}; _scheduleRender(); });
-    db.ref(`${base}/holidays`).on('value', snap => { companyHolidays = snap.val() || {}; _scheduleRender(); });
-    db.ref(`${base}/settings`).on('value', snap => { companySettings = snap.val() || {}; _scheduleRender(); });
-    db.ref(`${base}/roles`).on('value', snap => { companyRoles = snap.val() || {}; applyRolePermissions(); _scheduleRender(); });
-    db.ref(`${base}/schedules`).on('value', snap => { companySchedules = snap.val() || {}; _scheduleRender(); });
+    db.ref(`${base}/leave_requests`).on('value', snap => { companyLeaves = window.companyLeaves = snap.val() || {}; _scheduleRender(); });
+    db.ref(`${base}/holidays`).on('value', snap => { companyHolidays = window.companyHolidays = snap.val() || {}; _scheduleRender(); });
+    db.ref(`${base}/settings`).on('value', snap => { companySettings = window.companySettings = snap.val() || {}; _scheduleRender(); });
+    db.ref(`${base}/roles`).on('value', snap => { companyRoles = window.companyRoles = snap.val() || {}; applyRolePermissions(); _scheduleRender(); });
+    db.ref(`${base}/schedules`).on('value', snap => { companySchedules = window.companySchedules = snap.val() || {}; _scheduleRender(); });
   }
 
   const PLAN_LIMITS = { starter: 20, pro: 50, enterprise: Infinity };
@@ -306,6 +311,7 @@
     };
     if (renderers[currentPage]) renderers[currentPage]();
   }
+  window.renderCurrentPage = renderCurrentPage;
 
   let _overlayDismissed = false;
   function dismissLoadingOverlay() {
@@ -455,9 +461,11 @@
 
       const keysToCheck = [todayKey, yesterdayKey];
 
+      // FIX: fetch attendance once outside the loop instead of once per iteration
+      const snap = await db.ref(`${getCompanyPath()}/attendance/${uid}`).once('value');
+      const att = snap.val() || {};
+
       for (const checkKey of keysToCheck) {
-        const snap = await db.ref(`${getCompanyPath()}/attendance/${uid}`).once('value');
-        const att = snap.val() || {};
         if (att[checkKey] === 'P' && att[checkKey+'_time'] && !att[checkKey+'_out']) {
           const inTime = new Date(att[checkKey+'_time']);
           if (now - inTime >= 12 * 60 * 60 * 1000) {
@@ -504,7 +512,8 @@
       <div class="card hidden" id="csvImportModal" style="border:2px dashed var(--primary);">
         <div class="card-header"><div class="card-title">📂 CSV Import</div><button class="btn btn-ghost btn-sm" onclick="cancelCSVImport()">✕</button></div>
         <div style="margin-bottom:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px;font-size:.8rem;color:#0369a1;">
-          <b>Columns:</b> <code>fullName, email, dept, role, monthlySalary, empID</code>
+          <b>Columns:</b> <code>fullName, email, password, dept, role, monthlySalary, empID</code><br>
+          <span style="opacity:.8;">Include a <b>password</b> (min 6 chars) so employees can log in. If omitted, a DB record is created but login must be set up manually.</span>
         </div>
         <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
           <input type="file" id="csvFileInput" accept=".csv" class="form-input" style="max-width:320px;" onchange="previewCSV(this)">
@@ -562,7 +571,7 @@
   function cancelCSVImport() { document.getElementById('csvImportModal')?.classList.add('hidden'); _csvRows = []; }
   function downloadCSVTemplate(e) {
     e.preventDefault();
-    const csv = 'fullName,email,dept,role,monthlySalary,empID\nJuan dela Cruz,juan@example.com,RC,Employee,20000,EMP001';
+    const csv = 'fullName,email,password,dept,role,monthlySalary,empID\nJuan dela Cruz,juan@example.com,password123,RC,Employee,20000,EMP001';
     const a = document.createElement('a'); a.href = 'data:text/csv,' + encodeURIComponent(csv); a.download = 'employees_template.csv'; a.click();
   }
   function parseCSVLine(line) {
@@ -615,25 +624,61 @@
     if (btn) { btn.disabled=true; btn.textContent='Importing…'; }
     let imported=0, skipped=0, errors=[];
     const empLimit = getPlanLimit();
-    // FIX #4: Get fresh count once BEFORE the loop, increment manually to avoid stale realtime snapshot
     let currentCount = getActiveEmpCount();
+
+    // Get or reuse the secondary Firebase app used for creating auth accounts
+    let secondaryApp;
+    try { secondaryApp = firebase.app('secondary'); }
+    catch(_) { secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary'); }
+    const secondaryAuth = secondaryApp.auth();
+
+    const allEmps = Object.values(companyUsers);
+    let maxNum = allEmps.reduce((max,u) => { const n=parseInt((u.empID||'').replace(/\D/g,''))||0; return n>max?n:max; }, 0);
+
     for (const row of _csvRows) {
       const name = row.fullName||row.name||'';
+      const email = (row.email||'').trim();
       if (!name) { skipped++; continue; }
-      // FIX #4: Use locally tracked count instead of re-calling getActiveEmpCount() each iteration
       if (currentCount + imported >= empLimit) { errors.push(`Employee limit of ${empLimit} reached. Remaining rows skipped.`); break; }
-      const empID = row.empID||row.id||('EMP'+String(Date.now()).slice(-5));
+
+      // Generate empID
+      maxNum++;
+      const empID = (row.empID||row.id||'').trim() || ('EMP'+String(maxNum).padStart(3,'0'));
+
+      // Duplicate email check against existing employees
+      if (email && allEmps.find(u => (u.email||'').toLowerCase() === email.toLowerCase())) {
+        errors.push(`${name}: email "${email}" already exists — skipped.`); skipped++; continue;
+      }
+
+      const pass = (row.password||row.pass||'').trim();
       try {
-        await db.ref(`${getCompanyPath()}/users`).push({ fullName:name, email:row.email||'', dept:row.dept||'', role:row.role||'Employee', monthlySalary:parseFloat(row.monthlySalary||0)||0, empID });
+        let newUid = null;
+        if (email && pass && pass.length >= 6) {
+          // Create a real Firebase Auth account so the employee can log in
+          const cred = await secondaryAuth.createUserWithEmailAndPassword(email, pass);
+          newUid = cred.user.uid;
+          await secondaryAuth.signOut();
+          await db.ref(`users/${newUid}`).set({ companyId: currentCompanyId });
+          await db.ref(`${getCompanyPath()}/users/${newUid}`).set({ fullName:name, email, dept:row.dept||'', role:row.role||'Employee', monthlySalary:parseFloat(row.monthlySalary||0)||0, empID });
+        } else {
+          // No password supplied — create DB record only; employee will need a password set manually
+          await db.ref(`${getCompanyPath()}/users`).push({ fullName:name, email, dept:row.dept||'', role:row.role||'Employee', monthlySalary:parseFloat(row.monthlySalary||0)||0, empID, needsAuth: true });
+          if (!pass && email) errors.push(`${name}: no password in CSV — DB record created but login not set up yet.`);
+        }
         imported++;
-      } catch(err) { errors.push(name+': '+err.message); }
+      } catch(err) {
+        if (err.code === 'auth/email-already-in-use') errors.push(`${name}: email already registered in Firebase — skipped.`);
+        else errors.push(`${name}: ${err.message}`);
+        skipped++;
+      }
     }
+    try { await secondaryAuth.signOut(); } catch(_) {}
     if (btn) { btn.disabled=false; btn.textContent='Import All'; }
     const al = document.getElementById('csvImportAlert');
-    if (errors.length && al) { al.textContent = errors.join('; '); al.classList.remove('hidden'); }
+    if (errors.length && al) { al.textContent = errors.join(' | '); al.classList.remove('hidden'); }
     toast(`Imported ${imported}${skipped?' ('+skipped+' skipped)':''}`, imported?'success':'error');
-    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`CSV IMPORT: ${imported}`, timestamp:new Date().toISOString() });
-    if (imported > 0) cancelCSVImport();
+    await db.ref(`${getCompanyPath()}/audit_logs`).push({ name:currentUser.email, action:`CSV IMPORT: ${imported} added, ${skipped} skipped`, timestamp:new Date().toISOString() });
+    if (imported > 0 && !errors.length) cancelCSVImport();
   }
   function editEmp(uid) {
     const u = companyUsers[uid]; if (!u) return;
@@ -897,6 +942,8 @@
 
   async function autoPostAllRestDays(mon, year) {
     year = year || new Date().getFullYear();
+    const activeEmps = Object.values(companyUsers).filter(u=>!u.disabled&&(u['off1_'+mon]||u['off2_'+mon]||u.defaultOff1||u.defaultOff2)).length;
+    if (!confirm(`Auto-fill rest days for ${activeEmps} employee(s) in ${MN[mon]} ${year}? Only empty cells will be filled.`)) return;
     const dim = new Date(year,mon+1,0).getDate();
     for (const [uid,u] of Object.entries(companyUsers)) {
       if (u.disabled) continue;
@@ -920,26 +967,32 @@
   }
 
   function exportAttExcel() {
-    const mon=parseInt(document.getElementById('attMonth')?.value??new Date().getMonth());
-    const year=parseInt(document.getElementById('attYear')?.value??new Date().getFullYear());
-    const per=document.getElementById('attPeriod')?.value||'1-15';
-    const dim=new Date(year,mon+1,0).getDate();
-    let pS=1, pE=dim;
-    if(per==='1-15'){pS=1;pE=Math.min(15,dim);}
-    else if(per==='16-31'){pS=16;pE=dim;}
-    const data=[['Emp ID','Name','Dept','Shift']];
-    for(let d=pS;d<=pE;d++) data[0].push('Day '+d);
-    data[0].push('Total Lates (min)');
-    sortEmps().forEach(([uid,u])=>{
-      const att=companyAttendance[uid]||{};
-      const row=[u.empID||uid,u.fullName,u.dept,u['shift_'+mon]||u.defaultShift||''];
-      let tl=0;
-      for(let d=pS;d<=pE;d++){ const k=`${mon}_${d}`,st=att[k]||'',late=parseInt(att[k+'_late']||0); tl+=late; row.push(late?`${st}(${late}m late)`:st); }
-      row.push(tl); data.push(row);
-    });
-    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Attendance');
-    XLSX.writeFile(wb,`Attendance_${MN[mon]}_${pS}-${pE}_${year}.xlsx`);
+    const btn = event?.target;
+    const origText = btn?.textContent;
+    try {
+      if (btn) { btn.disabled=true; btn.textContent='Exporting…'; }
+      const mon=parseInt(document.getElementById('attMonth')?.value??new Date().getMonth());
+      const year=parseInt(document.getElementById('attYear')?.value??new Date().getFullYear());
+      const per=document.getElementById('attPeriod')?.value||'1-15';
+      const dim=new Date(year,mon+1,0).getDate();
+      let pS=1, pE=dim;
+      if(per==='1-15'){pS=1;pE=Math.min(15,dim);}
+      else if(per==='16-31'){pS=16;pE=dim;}
+      const data=[['Emp ID','Name','Dept','Shift']];
+      for(let d=pS;d<=pE;d++) data[0].push('Day '+d);
+      data[0].push('Total Lates (min)');
+      sortEmps().forEach(([uid,u])=>{
+        const att=companyAttendance[uid]||{};
+        const row=[u.empID||uid,u.fullName,u.dept,u['shift_'+mon]||u.defaultShift||''];
+        let tl=0;
+        for(let d=pS;d<=pE;d++){ const k=`${mon}_${d}`,st=att[k]||'',late=parseInt(att[k+'_late']||0); tl+=late; row.push(late?`${st}(${late}m late)`:st); }
+        row.push(tl); data.push(row);
+      });
+      const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,'Attendance');
+      XLSX.writeFile(wb,`Attendance_${MN[mon]}_${pS}-${pE}_${year}.xlsx`);
+    } catch(err) { toast('Export failed: '+err.message,'error'); }
+    finally { if (btn) { btn.disabled=false; btn.textContent=origText; } }
   }
 
   // ==================== LEAVES ====================
@@ -956,14 +1009,22 @@
     const thisYear=new Date().getFullYear();
     function getLeaveUsed(empUid,type) {
       return Object.values(companyLeaves).filter(lv=>lv.empID===empUid&&lv.type===type&&lv.status==='Approved').reduce((sum,lv)=>{
-        // FIX #3: Count only days that actually fall within thisYear, not just leaves that start in thisYear
         const s=new Date(lv.startDate),e=new Date(lv.endDate);
         const yearStart=new Date(thisYear,0,1), yearEnd=new Date(thisYear,11,31);
         const effectiveStart=s<yearStart?yearStart:s;
         const effectiveEnd=e>yearEnd?yearEnd:e;
         if(effectiveStart>effectiveEnd) return sum;
-        const days=Math.round((effectiveEnd-effectiveStart)/86400000)+1;
-        return sum+(isNaN(days)?0:days);
+        // Count working days only — skip weekends and public holidays
+        const holSet=new Set(Object.values(companyHolidays).filter(h=>h&&h.date).map(h=>h.date));
+        let days=0;
+        const cur=new Date(effectiveStart);
+        while(cur<=effectiveEnd){
+          const dow=cur.getDay();
+          const dateStr=cur.toISOString().slice(0,10);
+          if(dow!==0&&dow!==6&&!holSet.has(dateStr)) days++;
+          cur.setDate(cur.getDate()+1);
+        }
+        return sum+days;
       },0);
     }
     const balList=canManage?sortEmps().map(([uid,u])=>[uid,u]):[[currentUser.uid,companyUsers[currentUser.uid]||{}]];
@@ -1024,6 +1085,9 @@
     await db.ref(`${getCompanyPath()}/leave_requests/${lid}`).update({ status:'Rejected',reviewedBy:currentUser.uid,reviewedAt:new Date().toISOString() });
     toast('Rejected.','success');
   }
+  // Expose leave functions for cuckoo-ai.js patching
+  window.approveLeave = approveLeave;
+  window.rejectLeave  = rejectLeave;
 
   // ==================== PAYROLL ENGINE ====================
   function getPRSettings() {
@@ -1274,39 +1338,51 @@
           <div style="display:grid;grid-template-columns:1fr auto;background:var(--primary);color:#fff;border-radius:8px;padding:12px;font-weight:800;font-size:1rem;"><span>NET PAY</span><span>${fmt(p.netPay)}</span></div>
         </div>
         <div style="display:flex;gap:8px;margin-top:16px;">
-          <button class="btn btn-primary" onclick="printPayslip()">🖨 Print</button>
+          <button class="btn btn-primary" onclick="printPayslip(this)">🖨 Print</button>
           <button class="btn btn-ghost" onclick="document.getElementById('payslipOverlay').remove()">Close</button>
         </div>
       </div>`;
     overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
     document.body.appendChild(overlay);
-    window._payslipPrintContent = document.getElementById('payslipContent').innerHTML;
+    // Store on the overlay element itself — safe if multiple payslips opened in sequence
+    overlay._printContent = document.getElementById('payslipContent').innerHTML;
   }
 
-  function printPayslip() {
+  function printPayslip(triggerBtn) {
+    const overlayEl = triggerBtn ? triggerBtn.closest('.payslip-overlay') : document.getElementById('payslipOverlay');
     const pa = document.getElementById('payslipPrintArea');
-    pa.innerHTML = window._payslipPrintContent || '';
+    pa.innerHTML = (overlayEl && overlayEl._printContent) || '';
     pa.style.display = 'block';
     window.print();
     setTimeout(() => { pa.style.display='none'; pa.innerHTML=''; }, 1000);
   }
+  // Expose payslip/payroll functions for cuckoo-ai.js patching
+  window.showPayslip = showPayslip;
+  window.calcPayroll = calcPayroll;
 
   function exportPayrollExcel(mon,year,period) {
-    const dim=new Date(year,mon+1,0).getDate();
-    let pFrom=1,pTo=dim;
-    if(period==='1-15'){pFrom=1;pTo=15;}
-    if(period==='16-31'){pFrom=16;pTo=dim;}
-    const emps=sortEmps();
-    const headers=['Emp ID','Name','Dept','Days Present','Absences','SL','VL','Lates (min)','Gross Pay','Total Deductions','Net Pay'];
-    const data=[headers];
-    emps.forEach(([uid,u])=>{
-      const p=calcPayroll(uid,mon,year,pFrom,pTo);
-      data.push([u.empID||uid,u.fullName,u.dept,p.present,p.absent,p.sl,p.vl,p.lateMin,p.grossPay.toFixed(2),p.totalDeductions.toFixed(2),p.netPay.toFixed(2)]);
-    });
-    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Payroll');
-    XLSX.writeFile(wb,`Payroll_${MN[mon]}_${period}_${year}.xlsx`);
+    const btn = event?.target;
+    const origText = btn?.textContent;
+    try {
+      if (btn) { btn.disabled=true; btn.textContent='Exporting…'; }
+      const dim=new Date(year,mon+1,0).getDate();
+      let pFrom=1,pTo=dim;
+      if(period==='1-15'){pFrom=1;pTo=15;}
+      if(period==='16-31'){pFrom=16;pTo=dim;}
+      const emps=sortEmps();
+      const headers=['Emp ID','Name','Dept','Days Present','Absences','SL','VL','Lates (min)','Gross Pay','Total Deductions','Net Pay'];
+      const data=[headers];
+      emps.forEach(([uid,u])=>{
+        const p=calcPayroll(uid,mon,year,pFrom,pTo);
+        data.push([u.empID||uid,u.fullName,u.dept,p.present,p.absent,p.sl,p.vl,p.lateMin,p.grossPay.toFixed(2),p.totalDeductions.toFixed(2),p.netPay.toFixed(2)]);
+      });
+      const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,'Payroll');
+      XLSX.writeFile(wb,`Payroll_${MN[mon]}_${period}_${year}.xlsx`);
+    } catch(err) { toast('Export failed: '+err.message,'error'); }
+    finally { if (btn) { btn.disabled=false; btn.textContent=origText; } }
   }
+  window.exportPayroll = exportPayrollExcel;
 
   // ==================== TIMESTAMPS ====================
   function renderTimestamps() {
@@ -1406,31 +1482,32 @@
   }
 
   function exportDTRExcel(mon,year,period,empFilter) {
-    // Resolve period bounds (mirrors renderTimestamps logic)
-    const dim=new Date(year,mon+1,0).getDate();
-    let pS=1, pE=dim;
-    if(period==='1-15'){pS=1;pE=Math.min(15,dim);}
-    else if(period==='16-31'){pS=16;pE=dim;}
-
-    // Resolve employee list (mirrors renderTimestamps filter)
-    const empsToExport=sortEmps().filter(([uid])=>!empFilter||uid===empFilter);
-
-    const data=[['Emp ID','Name','Date','Status','Time In','Time Out','Lates (min)','IP']];
-    const fmtTime=iso=>{try{return iso?new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}):''}catch(e){return'';}};
-    empsToExport.forEach(([uid,u])=>{
-      const att=companyAttendance[uid]||{};
-      for(let d=pS;d<=pE;d++){
-        const k=`${mon}_${d}`,st=att[k]||'';
-        const dateStr=new Date(year,mon,d).toLocaleDateString('en-PH',{month:'short',day:'numeric',weekday:'short'});
-        data.push([u.empID||uid,u.fullName,dateStr,st,fmtTime(att[k+'_time']),fmtTime(att[k+'_out']),parseInt(att[k+'_late']||0),att[k+'_ip']||'']);
-      }
-    });
-    const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'DTR');
-    // Reflect period and employee in filename
-    const empSuffix=empFilter?(companyUsers[empFilter]?.empID||'emp'):'all';
-    const periodLabel=period==='full'?'Full':(period==='1-15'?'1-15':`16-${pE}`);
-    XLSX.writeFile(wb,`DTR_${MN[mon]}_${periodLabel}_${empSuffix}_${year}.xlsx`);
+    const btn = event?.target;
+    const origText = btn?.textContent;
+    try {
+      if (btn) { btn.disabled=true; btn.textContent='Exporting…'; }
+      const dim=new Date(year,mon+1,0).getDate();
+      let pS=1, pE=dim;
+      if(period==='1-15'){pS=1;pE=Math.min(15,dim);}
+      else if(period==='16-31'){pS=16;pE=dim;}
+      const empsToExport=sortEmps().filter(([uid])=>!empFilter||uid===empFilter);
+      const data=[['Emp ID','Name','Date','Status','Time In','Time Out','Lates (min)','IP']];
+      const fmtTime=iso=>{try{return iso?new Date(iso).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}):''}catch(e){return'';}};
+      empsToExport.forEach(([uid,u])=>{
+        const att=companyAttendance[uid]||{};
+        for(let d=pS;d<=pE;d++){
+          const k=`${mon}_${d}`,st=att[k]||'';
+          const dateStr=new Date(year,mon,d).toLocaleDateString('en-PH',{month:'short',day:'numeric',weekday:'short'});
+          data.push([u.empID||uid,u.fullName,dateStr,st,fmtTime(att[k+'_time']),fmtTime(att[k+'_out']),parseInt(att[k+'_late']||0),att[k+'_ip']||'']);
+        }
+      });
+      const ws=XLSX.utils.aoa_to_sheet(data),wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,'DTR');
+      const empSuffix=empFilter?(companyUsers[empFilter]?.empID||'emp'):'all';
+      const periodLabel=period==='full'?'Full':(period==='1-15'?'1-15':`16-${pE}`);
+      XLSX.writeFile(wb,`DTR_${MN[mon]}_${periodLabel}_${empSuffix}_${year}.xlsx`);
+    } catch(err) { toast('Export failed: '+err.message,'error'); }
+    finally { if (btn) { btn.disabled=false; btn.textContent=origText; } }
   }
 
   // ==================== HOLIDAYS ====================
@@ -1609,6 +1686,9 @@
     const timeIn=document.getElementById('bulkTimeIn')?.value||'08:00';
     const timeOut=document.getElementById('bulkTimeOut')?.value||'17:00';
     if(!shift) return toast('Enter a shift name','error');
+    const activeEmps = Object.values(companyUsers).filter(u=>!u.disabled).length;
+    const scopeLabel = scope==='all' ? 'all 12 months' : `${MN[mon]} only`;
+    if (!confirm(`Apply shift "${shift}" (${timeIn}–${timeOut}) to all ${activeEmps} employees for ${scopeLabel}? This cannot be undone.`)) return;
     for(const[uid,u]of Object.entries(companyUsers)){
       if(u.disabled) continue;
       const userUpdates={};
@@ -1701,6 +1781,8 @@
 
   // ==================== SETTINGS ====================
   let _activeSettingsTab = 'company';
+  // Cache of unsaved payroll setting values so switching tabs doesn't silently reset them
+  let _payrollSettingsCache = {};
 
   function renderSettings() {
     const pr = getPRSettings();
@@ -2179,6 +2261,21 @@
   }
 
   function switchSettingsTab(tab) {
+    // Snapshot all payroll setting DOM values before re-rendering so they survive tab switches
+    const payrollIds = [
+      'pr_workingDays','pr_hoursPerDay','pr_lateMode','pr_gracePeriod',
+      'pr_ndStart','pr_ndEnd','pr_ndRate','pr_regHolRate','pr_specHolRate',
+      'pr_sssMode','pr_sssEmployeePct','pr_sssCap','pr_sssFixed',
+      'pr_phMode','pr_phPct','pr_phFixed',
+      'pr_pagibigMode','pr_pagibigPct','pr_pagibigCap','pr_pagibigFixed',
+    ];
+    const checkboxIds = [
+      'feat_sl_pay','feat_vl_pay','feat_hol_reg','feat_hol_premium','feat_nd_pay',
+      'feat_absent_ded','feat_late_ded','feat_npl_ded','feat_ut_ded',
+      'feat_sss','feat_philhealth','feat_pagibig',
+    ];
+    payrollIds.forEach(id => { const el = document.getElementById(id); if (el) _payrollSettingsCache[id] = el.value; });
+    checkboxIds.forEach(id => { const el = document.getElementById(id); if (el) _payrollSettingsCache[id] = el.checked; });
     _activeSettingsTab = tab;
     renderSettings();
     if (tab === 'preview') setTimeout(updateSettingsPreview, 100);
@@ -2279,8 +2376,10 @@
 
   async function savePayrollSettings() {
     if (!canDo('managePayrollSettings')) { toast('Access denied.', 'error'); return; }
-    const g = id => document.getElementById(id)?.value;
-    const gb = id => document.getElementById(id)?.checked ?? true;
+    // Read from DOM if element exists, fall back to cache (values saved when user switched tabs)
+    const g  = id => { const el = document.getElementById(id); return el ? el.value : (_payrollSettingsCache[id] ?? null); };
+    const gb = id => { const el = document.getElementById(id); return el ? el.checked : (_payrollSettingsCache[id] ?? true); };
+    const s  = getPRSettings(); // final fallback to saved DB values
 
     const sssEmpPct  = parseFloat(g('pr_sssEmployeePct') || '4.5') / 100;
     const phPct      = parseFloat(g('pr_phPct')          || '2.5') / 100;
@@ -2395,5 +2494,6 @@
   // ===== LOGOUT =====
   document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
 </script>
+<script src="cuckoo-ai.js"></script>
 </body>
 </html>

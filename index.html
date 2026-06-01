@@ -167,37 +167,13 @@
     </button>
   </section>
 
-  <!-- DOWNLOAD APP -->
-  <section class="download-section" id="download">
-    <div class="download-wrap">
-      <div class="download-icon">
-        <i class="fa-brands fa-android"></i>
-      </div>
-      <div class="download-text">
-        <h2>Take Cuckoo Anywhere</h2>
-        <p>Install the Cuckoo app on your Android device and manage your team's payroll and attendance on the go.</p>
-        <div class="download-badges">
-          <span class="download-badge"><i class="fa-solid fa-shield-halved"></i> Safe &amp; Secure</span>
-          <span class="download-badge"><i class="fa-solid fa-mobile-screen"></i> Android 8.0+</span>
-          <span class="download-badge"><i class="fa-solid fa-wifi"></i> Works Offline</span>
-        </div>
-      </div>
-      <a href="/HueTeams/Cuckoo.apk" download class="btn-download">
-        <i class="fa-solid fa-download"></i>
-        <span>
-          <small>Download App</small>
-          <strong>Android APK</strong>
-        </span>
-      </a>
-    </div>
-  </section>
   <!-- FOOTER -->
   <footer class="footer">
     <div>© 2025 Cuckoo. All rights reserved.</div>
     <div>
       <a href="terms.html" target="_blank">Terms of Service</a> ·
       <a href="privacy.html" target="_blank">Privacy Policy</a> ·
-      <a href="#">Contact</a>
+      <a href="mailto:hello@cuckoo.ph">Contact</a>
     </div>
   </footer>
 </div>
@@ -234,14 +210,14 @@
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyAohgBioG5ZDyhu3t5PO1OGbZEupGNzIc8",
-    authDomain: "payrol-saas.firebaseapp.com",
-    databaseURL: "https://payrol-saas-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "payrol-saas",
-    storageBucket: "payrol-saas.firebasestorage.app",
-    messagingSenderId: "314676130295",
-    appId: "1:314676130295:web:bf6077ee69530f70ca3ef2"
-  };
+  apiKey: "AIzaSyCi5u_LzXU8R314I26t-aiwyLtFplgMdXQ",
+  authDomain: "cuckoo-3296c.firebaseapp.com",
+  databaseURL: "https://cuckoo-3296c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cuckoo-3296c",
+  storageBucket: "cuckoo-3296c.firebasestorage.app",
+  messagingSenderId: "921313677335",
+  appId: "1:921313677335:web:c3a074c841d4cefe690c52"
+};
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
   const auth = firebase.auth();
@@ -373,8 +349,10 @@
 
   function showVerifyBanner(email) {
     const banner = document.getElementById('verifyBanner');
+    // FIX: escape email before injecting into innerHTML to prevent XSS
+    const safeEmail = email.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     banner.innerHTML = `
-      ✅ Account created! We sent a verification email to <b>${email}</b>.
+      ✅ Account created! We sent a verification email to <b>${safeEmail}</b>.
       Please click the link to access your dashboard.
       <button onclick="resendVerification()" style="margin-left:12px;background:rgba(255,255,255,.2);border:none;color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">Resend</button>
       <button onclick="this.parentElement.style.display='none'" style="margin-left:8px;background:transparent;border:1px solid rgba(255,255,255,.5);color:#fff;padding:4px 12px;border-radius:6px;cursor:pointer;font-weight:700;">✕</button>
@@ -387,24 +365,54 @@
     if (!user) { document.getElementById('verifyBanner').innerHTML = `You've been signed out. Please log in to receive a new verification email.`; return; }
     try {
       await user.sendEmailVerification();
-      document.getElementById('verifyBanner').innerHTML = `✅ Verification email resent to <b>${user.email}</b>. Check your inbox.`;
+      // FIX: escape user.email before inserting into innerHTML
+      const safeEmail2 = user.email.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      document.getElementById('verifyBanner').innerHTML = `✅ Verification email resent to <b>${safeEmail2}</b>. Check your inbox.`;
     } catch (err) { showError(err.message); }
   }
 
-  async function resendVerificationFromLogin(email) {
-    const password = prompt('Enter your password to receive a new verification email:');
-    if (!password) return;
-    try {
-      const cred = await auth.signInWithEmailAndPassword(email, password);
-      if (cred.user.emailVerified) {
+  // FIX: replaced insecure prompt() with a proper inline password modal
+  function resendVerificationFromLogin(email) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,26,23,.55);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:20px;padding:32px;width:100%;max-width:380px;box-shadow:0 24px 72px rgba(15,26,23,.22);border:1px solid #dde5e2;">
+        <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:8px;letter-spacing:-.03em;">Confirm Your Password</h3>
+        <p style="font-size:.85rem;color:#5c7068;margin-bottom:20px;">Enter your password to resend the verification email.</p>
+        <input type="password" id="_rvPwInput" placeholder="••••••••" style="width:100%;padding:10px 14px;border:1.5px solid #dde5e2;border-radius:11px;font-size:.9rem;margin-bottom:16px;font-family:Outfit,sans-serif;" />
+        <div id="_rvErr" style="display:none;font-size:.8rem;color:#9b1c1c;background:#fff1f0;border:1px solid #fecaca;padding:8px 12px;border-radius:8px;margin-bottom:12px;"></div>
+        <div style="display:flex;gap:8px;">
+          <button id="_rvCancel" style="flex:1;padding:10px;border:1.5px solid #dde5e2;border-radius:11px;background:#fff;cursor:pointer;font-weight:600;font-family:Outfit,sans-serif;">Cancel</button>
+          <button id="_rvSubmit" style="flex:1;padding:10px;border:none;border-radius:11px;background:linear-gradient(135deg,#0e7c6e,#14a892);color:#fff;cursor:pointer;font-weight:600;font-family:Outfit,sans-serif;">Send Email</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#_rvCancel').onclick = () => document.body.removeChild(overlay);
+    overlay.querySelector('#_rvSubmit').onclick = async () => {
+      const pw = overlay.querySelector('#_rvPwInput').value;
+      const errEl = overlay.querySelector('#_rvErr');
+      if (!pw) { errEl.textContent = 'Please enter your password.'; errEl.style.display = 'block'; return; }
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, pw);
+        if (cred.user.emailVerified) {
+          await auth.signOut();
+          document.body.removeChild(overlay);
+          showError('Your email is already verified. Try logging in normally.');
+          return;
+        }
+        await cred.user.sendEmailVerification();
         await auth.signOut();
-        showError('Your email is already verified. Try logging in normally.');
-        return;
+        document.body.removeChild(overlay);
+        // FIX: show as success, not error
+        const errorEl = document.getElementById('modalError');
+        errorEl.textContent = 'Verification email sent. Please check your inbox.';
+        errorEl.className = 'alert alert-success';
+        errorEl.classList.remove('hidden');
+      } catch (err) {
+        errEl.textContent = err.code === 'auth/wrong-password' ? 'Incorrect password.' : err.message;
+        errEl.style.display = 'block';
       }
-      await cred.user.sendEmailVerification();
-      await auth.signOut();
-      showError('Verification email sent. Please check your inbox.');
-    } catch (err) { showError(err.message); }
+    };
   }
 
   async function sendPasswordReset() {
